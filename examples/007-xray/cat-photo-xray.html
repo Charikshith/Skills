@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>X-ray of a sleeping cat</title>
+<script>
+/* Theme: opens in Deep dark; the ☀/☾ button switches to light and remembers it (the device's dark mode is ignored). */
+(function () {
+  var d = document.documentElement;
+  try { var t = localStorage.getItem('vs-theme'); if (t === 'light' || t === 'dark') d.setAttribute('data-theme', t); } catch (e) {}
+  document.addEventListener('DOMContentLoaded', function () {
+    var b = document.querySelector('.theme-toggle'); if (!b) return;
+    var sync = function () {
+      var light = d.getAttribute('data-theme') === 'light';
+      b.textContent = light ? '☾' : '☀';
+      b.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+      b.title = light ? 'Dark theme' : 'Light theme';
+    };
+    sync();
+    b.addEventListener('click', function () {
+      var next = d.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      d.setAttribute('data-theme', next);
+      try { localStorage.setItem('vs-theme', next); } catch (e) {}
+      sync();
+    });
+  });
+})();
+</script>
+<style>
+/* ===== Tokens — default theme: Deep dark. Colours carry meaning: c1..c5 are the only accent families ===== */
+:root{
+  --bg:#0f1013; --surface:#1a1b20; --ink:#ededf1; --muted:#a4a6b0; --line:#34363e; --zone:#202228;
+  --c1:#7aa7ff; --c1-soft:#1b2846;   /* blue   */
+  --c2:#40d0a0; --c2-soft:#13332a;   /* green  */
+  --c3:#f4a94e; --c3-soft:#3a2912;   /* amber  */
+  --c4:#f472a8; --c4-soft:#3d1729;   /* rose   */
+  --c5:#ab8dff; --c5-soft:#291f47;   /* violet */
+  --on-accent:#0f1013;
+  --shadow:rgba(0,0,0,.55); --mass:#555b69; --mass-shade:#383c46;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;
+  --r:18px;
+  color-scheme:dark;
+}
+/* ===== Light theme (Warm paper) — via the ☀ button ===== */
+:root[data-theme="light"]{
+  --bg:#f4f2ec; --surface:#ffffff; --ink:#18181b; --muted:#5b5e66; --line:#d9d5cb; --zone:#ece9e1;
+  --c1:#2563eb; --c1-soft:#dce7fe; --c2:#0b8a64; --c2-soft:#d2f0e4; --c3:#c76a00; --c3-soft:#fde8cc;
+  --c4:#c8246b; --c4-soft:#fcdfea; --c5:#6c3fd8; --c5-soft:#e9e1fd; --on-accent:#ffffff;
+  --shadow:rgba(30,25,15,.16); --mass:#ffffff; --mass-shade:#d6d2c8;
+  color-scheme:light;
+}
+.theme-toggle{position:fixed;top:14px;right:14px;z-index:20;width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:19px;line-height:1;cursor:pointer;
+  box-shadow:0 6px 16px -8px var(--shadow);transition:transform .15s}
+.theme-toggle:hover{transform:scale(1.07)}
+.theme-toggle:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+.hand .theme-toggle{display:none}   /* handwritten style is always paper */
+@media print{.theme-toggle{display:none}}
+
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--font);-webkit-font-smoothing:antialiased}
+body::before{ /* soft colour glow behind the header */
+  content:"";position:fixed;inset:0 0 auto 0;height:520px;z-index:-1;pointer-events:none;
+  background:radial-gradient(60% 80% at 15% 0%,var(--c1-soft),transparent 70%),
+             radial-gradient(50% 70% at 90% 10%,var(--c5-soft),transparent 70%);
+  opacity:.9}
+.page{max-width:1040px;margin:0 auto;padding:44px 24px 56px}
+@media (max-width:600px){.page{padding:24px 16px 40px}}
+
+/* ===== Header ===== */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;padding:6px 12px 6px 10px;border-radius:999px;
+  background:var(--surface);border:1px solid var(--line);font:600 12px/1 var(--font);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c1);box-shadow:0 0 0 3px var(--c1-soft)}
+h1{font-size:clamp(30px,5vw,48px);line-height:1.08;letter-spacing:-.025em;margin:0 0 12px;font-weight:800}
+h1 .accent{background:linear-gradient(90deg,var(--c1),var(--c5));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:18px;color:var(--muted);max-width:66ch;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.chips li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px;color:var(--muted)}
+.chips b{color:var(--ink);font-weight:700}
+h2{font-size:20px;letter-spacing:-.01em;margin:44px 0 14px;display:flex;align-items:center;gap:10px}
+h2::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ===== Main visual ===== */
+.stage{position:relative;margin:28px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;overflow-x:auto;box-shadow:0 1px 2px var(--shadow),0 18px 40px -24px var(--shadow)}
+.stage::before{ /* faint dot grid */
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.55;
+  background:radial-gradient(circle,var(--line) 1px,transparent 1.4px) 0 0/22px 22px}
+.stage > svg{position:relative;display:block;width:100%;height:auto;overflow:visible}
+.stage figcaption{position:relative;font-size:14px;color:var(--muted);margin-top:12px}
+@media (max-width:600px){.stage{padding:12px}.stage > svg{min-width:640px}.stage figcaption{position:sticky;left:0}}
+.scroll-hint{display:none;font-size:13px;color:var(--muted);margin:8px 0 0}
+@media (max-width:600px){.scroll-hint{display:block}}
+
+/* --- SVG vocabulary: use these classes, never hard-coded colours --- */
+.node{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.node.c1{fill:url(#g-c1);stroke:var(--c1)} .node.c2{fill:url(#g-c2);stroke:var(--c2)}
+.node.c3{fill:url(#g-c3);stroke:var(--c3)} .node.c4{fill:url(#g-c4);stroke:var(--c4)}
+.node.c5{fill:url(#g-c5);stroke:var(--c5)}
+.node.solid.c1{fill:var(--c1)} .node.solid.c2{fill:var(--c2)} .node.solid.c3{fill:var(--c3)}
+.node.solid.c4{fill:var(--c4)} .node.solid.c5{fill:var(--c5)}
+.lift{filter:url(#shadow)}                          /* soft drop shadow: put on a <g> or shape */
+.chip{stroke:none} .chip.c1{fill:var(--c1)} .chip.c2{fill:var(--c2)} .chip.c3{fill:var(--c3)} .chip.c4{fill:var(--c4)} .chip.c5{fill:var(--c5)}
+.ico{color:var(--ink)} .ico.on{color:var(--on-accent)}
+.ico.c1{color:var(--c1)} .ico.c2{color:var(--c2)} .ico.c3{color:var(--c3)} .ico.c4{color:var(--c4)} .ico.c5{color:var(--c5)} .ico.muted{color:var(--muted)}
+.zone{fill:var(--zone);stroke:var(--line);stroke-width:1;stroke-dasharray:5 5;fill-opacity:.7}
+/* scene shapes (sky, ground, sea, body outline …): soft fills that fade */
+.wash{stroke:none} .wash.c1{fill:url(#fade-c1)} .wash.c2{fill:url(#fade-c2)} .wash.c3{fill:url(#fade-c3)}
+.wash.c4{fill:url(#fade-c4)} .wash.c5{fill:url(#fade-c5)} .wash.up.c1{fill:url(#rise-c1)} .wash.up.c2{fill:url(#rise-c2)}
+.wash.up.c3{fill:url(#rise-c3)} .wash.up.c4{fill:url(#rise-c4)} .wash.up.c5{fill:url(#rise-c5)}
+.wash.line{stroke-width:2} .wash.line.c1{stroke:var(--c1)} .wash.line.c2{stroke:var(--c2)} .wash.line.c3{stroke:var(--c3)}
+.mass{fill:var(--mass);stroke:none} .mass.shade{fill:var(--mass-shade)}   /* solid soft blobs: clouds, organs, objects */
+.edge{fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.edge.c1{stroke:var(--c1)} .edge.c2{stroke:var(--c2)} .edge.c3{stroke:var(--c3)} .edge.c4{stroke:var(--c4)} .edge.c5{stroke:var(--c5)}
+.edge.dash{stroke-dasharray:6 7}
+.edge.thick{stroke-width:3.5}
+.edge.flow{stroke-dasharray:7 9;animation:march 1.1s linear infinite}   /* marching dashes = something is moving */
+@keyframes march{to{stroke-dashoffset:-16}}
+.particle{stroke:var(--surface);stroke-width:1.5} .particle.c1{fill:var(--c1)} .particle.c2{fill:var(--c2)}
+.particle.c3{fill:var(--c3)} .particle.c4{fill:var(--c4)} .particle.c5{fill:var(--c5)}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 24s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.leader{fill:none;stroke:var(--muted);stroke-width:1.2}
+.dot{fill:var(--muted)}
+.t{font:600 16px var(--font);fill:var(--ink)}
+.t.sub{font-weight:400;font-size:14px;fill:var(--muted)}
+.t.big{font-size:20px;font-weight:800}
+.t.small{font-size:13px;font-weight:600;fill:var(--muted)}
+.t.on{fill:var(--on-accent)}
+.t.c1{fill:var(--c1)} .t.c2{fill:var(--c2)} .t.c3{fill:var(--c3)} .t.c4{fill:var(--c4)} .t.c5{fill:var(--c5)}
+.t.mono{font-family:var(--mono)}
+.t.halo{paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}  /* readable over scenes/lines */
+.badge circle{fill:var(--ink);stroke:var(--surface);stroke-width:2.5} .badge text{font:800 13px var(--font);fill:var(--surface)}
+.badge.c1 circle{fill:var(--c1)} .badge.c2 circle{fill:var(--c2)} .badge.c3 circle{fill:var(--c3)}
+.badge.c4 circle{fill:var(--c4)} .badge.c5 circle{fill:var(--c5)}
+/* step focus (wired up by the script at the bottom) */
+[data-step]{transition:opacity .25s}
+svg.focusing [data-step]:not(.on){opacity:.18}
+@media (prefers-reduced-motion:reduce){.edge.flow,.spin,.pulse{animation:none}.particle{display:none}}
+
+/* ===== Walkthrough player (inserted by the script; no markup needed) ===== */
+.player{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:14px;padding:10px 14px 10px 10px;
+  border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+@media (max-width:600px){.player{position:sticky;left:0}}
+.player button{font:inherit;cursor:pointer}
+.player button:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+.pl-play{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:var(--ink);color:var(--surface);display:grid;place-items:center;
+  box-shadow:0 6px 16px -8px var(--shadow);transition:transform .15s}
+.pl-play:hover{transform:scale(1.06)}
+.pl-play svg{margin-left:2px} .player.playing .pl-play svg{margin-left:0}
+.pl-nav{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0;display:grid;place-items:center}
+.pl-track{display:flex;gap:4px;flex:none}
+.pl-seg{width:34px;height:20px;padding:0;border:0;background:none;color:var(--ink)}
+.pl-seg.c1{color:var(--c1)} .pl-seg.c2{color:var(--c2)} .pl-seg.c3{color:var(--c3)} .pl-seg.c4{color:var(--c4)} .pl-seg.c5{color:var(--c5)}
+.pl-seg i{display:block;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.pl-seg s{display:block;height:100%;width:0;background:currentColor;text-decoration:none}
+.pl-seg.done s,.pl-seg.active s{width:100%}
+.player.playing .pl-seg.active s{animation:pl-fill var(--dur,4s) linear}
+@keyframes pl-fill{from{width:0}to{width:100%}}
+.pl-cap{flex:1 1 300px;margin:0;font-size:15px;line-height:1.45;color:var(--muted);min-height:44px;display:flex;flex-wrap:wrap;align-items:center;gap:0 6px}
+.pl-cap b{color:var(--ink)}
+.pl-n{font:700 12px/1 var(--font);letter-spacing:.06em;text-transform:uppercase;color:var(--surface);background:var(--muted);padding:4px 7px;border-radius:999px}
+@media print{.player{display:none}}
+
+/* ===== Reading guide: numbered steps that match the badges ===== */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:12px;counter-reset:s}
+.steps li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 16px 54px;position:relative;
+  cursor:default;transition:transform .2s,box-shadow .2s,border-color .2s;outline:none}
+.steps li::before{content:counter(s);position:absolute;left:14px;top:15px;width:26px;height:26px;border-radius:50%;
+  background:var(--ink);color:var(--surface);font:800 13px/26px var(--font);text-align:center}
+.steps li.c1::before{background:var(--c1)} .steps li.c2::before{background:var(--c2)} .steps li.c3::before{background:var(--c3)}
+.steps li.c4::before{background:var(--c4)} .steps li.c5::before{background:var(--c5)}
+.steps li.on,.steps li:hover,.steps li:focus-visible{transform:translateY(-2px);border-color:var(--muted);box-shadow:0 10px 24px -14px var(--shadow)}
+.steps b{display:block;margin-bottom:2px}
+.steps span{color:var(--muted);font-size:15px}
+
+/* ===== Takeaways ===== */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.card{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 16px 60px}
+.card::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--c1)}
+.card svg{position:absolute;left:18px;top:17px;width:26px;height:26px;color:var(--c1)}
+.card.c2::before{background:var(--c2)} .card.c3::before{background:var(--c3)} .card.c4::before{background:var(--c4)} .card.c5::before{background:var(--c5)}
+.card.c2 svg{color:var(--c2)} .card.c3 svg{color:var(--c3)} .card.c4 svg{color:var(--c4)} .card.c5 svg{color:var(--c5)}
+.card b{display:block;margin-bottom:2px}
+.card p{margin:0;color:var(--muted)}
+
+/* ===== Legend ===== */
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin:14px 0 0;padding:0;list-style:none;font-size:14px;color:var(--muted)}
+.legend li{display:flex;align-items:center;gap:8px}
+.sw{width:14px;height:14px;border-radius:4px;border:1.5px solid var(--line);background:var(--surface)}
+.sw.c1{background:var(--c1-soft);border-color:var(--c1)} .sw.c2{background:var(--c2-soft);border-color:var(--c2)}
+.sw.c3{background:var(--c3-soft);border-color:var(--c3)} .sw.c4{background:var(--c4-soft);border-color:var(--c4)}
+.sw.c5{background:var(--c5-soft);border-color:var(--c5)}
+.sw.line{height:3px;border:0;border-radius:2px;background:var(--muted)}
+.sw.line.c1{background:var(--c1)} .sw.line.c2{background:var(--c2)} .sw.line.c3{background:var(--c3)}
+.sw.line.c4{background:var(--c4)} .sw.line.c5{background:var(--c5)}
+
+/* ===== Footnote ===== */
+.note{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+code{font-family:var(--mono);font-size:.92em;background:var(--zone);padding:1px 5px;border-radius:5px}
+
+@media print{body{background:#fff}body::before{display:none}.stage,.steps li,.card{break-inside:avoid;box-shadow:none}}
+
+/* ===== X-ray: tokens ===== */
+:root{
+  --xr-film:#09111d; --xr-shell:rgba(122,190,255,.07); --xr-edge:rgba(140,206,255,.62); --xr-grid:rgba(110,180,255,.11);
+  --xr-scan:#5be0ff; --xr-bone:#93a0ba; --xr-glow:.7;
+  --xr-bg:radial-gradient(ellipse 70% 60% at 50% 42%,#10213a 0%,#09111d 72%);
+}
+:root[data-theme="light"]{
+  --xr-film:#e7eef5; --xr-shell:rgba(40,90,150,.07); --xr-edge:rgba(30,72,122,.55); --xr-grid:rgba(30,80,140,.11);
+  --xr-scan:#0a87b5; --xr-bone:#7c8aa3; --xr-glow:0;
+  --xr-bg:radial-gradient(ellipse 80% 70% at 50% 35%,#ffffff 0%,#e4ecf4 78%);
+}
+/* ===== X-ray: the stage (dark = scanner screen, light = lightbox film) ===== */
+.stage.xr-stage{background:var(--xr-bg);border-color:var(--xr-edge)}
+.xr-stage::before{opacity:.22}
+:root[data-theme="light"] .xr-stage{box-shadow:inset 0 0 0 6px #f6f9fc,inset 0 0 0 7px #cfdae6,0 18px 40px -26px var(--shadow)}
+
+/* ===== X-ray: toolbar (made by the script) ===== */
+.xr-bar{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 12px;padding:8px 10px;
+  border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+@media (max-width:600px){.xr-bar{position:sticky;left:0}}
+.xr-seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.xr-seg button,.xr-lensbtn{font:600 14px/1 var(--font);color:var(--muted);background:none;border:0;padding:9px 14px;cursor:pointer}
+.xr-seg button+button{border-left:1px solid var(--line)}
+.xr-seg button[aria-pressed="true"]{background:var(--xr-scan);color:var(--xr-film)}
+.xr-lensbtn{border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.xr-lensbtn[aria-pressed="true"]{background:var(--xr-scan);color:var(--xr-film);border-color:var(--xr-scan)}
+.xr-seg button:focus-visible,.xr-lensbtn:focus-visible,.xr-slide input:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+.xr-slide{display:flex;align-items:center;gap:10px;flex:1 1 200px;min-width:160px;font:600 13px/1 var(--font);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.xr-slide input{flex:1;accent-color:var(--xr-scan);height:24px;margin:0}
+.xr-bar.is-xray .xr-slide,.xr-bar.is-outside .xr-slide{opacity:.55}
+
+/* ===== X-ray: SVG vocabulary (classes only) ===== */
+.xr-scan{fill:url(#xr-grid);stroke:none;pointer-events:none}
+/* outer shell: translucent silhouette with a cool glow */
+.xr-shell{fill:var(--xr-shell);stroke:var(--xr-edge);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;
+  filter:drop-shadow(0 0 calc(10px*var(--xr-glow)) var(--xr-edge))}
+.xr-shell.fine{fill:none;stroke-width:1.3;opacity:.75;filter:none}
+.xr-shell.solid{fill:color-mix(in srgb,var(--xr-edge) 18%,transparent)}
+.xr-app{--xc:var(--c1);fill:color-mix(in srgb,var(--xc) 34%,transparent);stroke:none}   /* faint app icons on the outside view */
+.xr-app.c1{--xc:var(--c1)} .xr-app.c2{--xc:var(--c2)} .xr-app.c3{--xc:var(--c3)} .xr-app.c4{--xc:var(--c4)} .xr-app.c5{--xc:var(--c5)}
+/* inside parts: bright glowing line-art in category colours */
+.xr-part,.xr-line,.xr-valve,.xr-tube{--xc:var(--c1)}
+.xr-part.c1,.xr-line.c1,.xr-valve.c1,.xr-tube.c1{--xc:var(--c1)} .xr-part.c2,.xr-line.c2,.xr-valve.c2,.xr-tube.c2{--xc:var(--c2)}
+.xr-part.c3,.xr-line.c3,.xr-valve.c3,.xr-tube.c3{--xc:var(--c3)} .xr-part.c4,.xr-line.c4,.xr-valve.c4,.xr-tube.c4{--xc:var(--c4)}
+.xr-part.c5,.xr-line.c5,.xr-valve.c5,.xr-tube.c5{--xc:var(--c5)}
+.xr-part{fill:color-mix(in srgb,var(--xc) 16%,var(--xr-film));stroke:var(--xc);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;
+  filter:drop-shadow(0 0 calc(5px*var(--xr-glow)) var(--xc))}
+.xr-part.bright{fill:color-mix(in srgb,var(--xc) 40%,var(--xr-film))}
+.xr-part.thin{fill:none;stroke-width:1.5}
+.xr-part.dim{fill:color-mix(in srgb,var(--xc) 8%,var(--xr-film));stroke-width:1.5}
+.xr-line{fill:none;stroke:var(--xc);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 calc(4px*var(--xr-glow)) var(--xc))}
+.xr-valve{fill:none;stroke:var(--xc);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 calc(5px*var(--xr-glow)) var(--xc))}
+.xr-bone{fill:none;stroke:var(--xr-bone);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;opacity:.42}
+.xr-bone.wide{stroke-width:14;opacity:.3}
+/* tubes (vessels, pipes, wires): <g class="xr-tube c1" style="--w:24"><path d=".."/><path class="in" d=".."/></g> */
+.xr-tube>path{fill:none;stroke:var(--xc);stroke-width:calc(var(--w,20)*1px);stroke-linecap:butt;stroke-linejoin:round;
+  filter:drop-shadow(0 0 calc(5px*var(--xr-glow)) var(--xc))}
+.xr-tube>path.in{stroke:color-mix(in srgb,var(--xc) 14%,var(--xr-film));stroke-width:calc(var(--w,20)*1px - 3.4px);filter:none}
+.xr-tube.round>path{stroke-linecap:round}
+.xr-glow{filter:drop-shadow(0 0 calc(7px*var(--xr-glow)) currentColor)}
+/* flow lines inside parts are slightly brighter */
+.xr-inside .edge.flow{stroke-width:2.2}
+.xr-inside .particle{stroke:var(--xr-film)}
+
+/* ===== X-ray: the scanner (made by the script) ===== */
+.xr-live .xr-inside{clip-path:url(#xr-clip)}
+.xr-live .xr-outside{mask:url(#xr-mask)}
+.xr-label{transition:opacity .3s}
+.xr-live .xr-label.off{opacity:0;pointer-events:none}
+.xr-scanbar{cursor:ew-resize;touch-action:none}
+.xr-scanbar:focus{outline:none}
+.xr-scanline{stroke:var(--xr-scan);stroke-width:2.2;filter:drop-shadow(0 0 calc(6px*var(--xr-glow)) var(--xr-scan))}
+.xr-hit{fill:transparent}
+.xr-grip rect{fill:var(--xr-scan);stroke:var(--xr-film);stroke-width:2.5}
+.xr-grip path{fill:none;stroke:var(--xr-film);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.xr-scanbar:focus-visible .xr-grip rect{stroke:var(--ink);stroke-width:3}
+svg:not([data-mode="both"]) .xr-scanbar{display:none}
+.xr-lens-ring{fill:none;stroke:var(--xr-scan);stroke-width:2.4;pointer-events:none;filter:drop-shadow(0 0 calc(7px*var(--xr-glow)) var(--xr-scan))}
+.xr-lens{pointer-events:none}
+.xr-lens.off{display:none}
+.xr-lens-on{cursor:none}
+.xr-lens-on .xr-scanbar{cursor:ew-resize}
+@media (prefers-reduced-motion:reduce){.xr-label{transition:none}}
+
+/* ===== X-ray: print — light film, inside layer fully shown ===== */
+@media print{
+  :root:root:root:not(.hand){
+    --bg:#ffffff; --surface:#ffffff; --ink:#15151a; --muted:#4b4e57; --line:#c9c6bd; --zone:#f1efe9;
+    --c1:#1d4ed8; --c1-soft:#dbe6fd; --c2:#0b7a58; --c2-soft:#d3eee3; --c3:#b45f00; --c3-soft:#fde6c8;
+    --c4:#b91c5c; --c4-soft:#fadbe7; --c5:#5b34c4; --c5-soft:#e7defb; --on-accent:#ffffff; --shadow:transparent;
+    --xr-film:#eef3f8; --xr-shell:rgba(40,90,150,.07); --xr-edge:rgba(30,72,122,.55); --xr-grid:rgba(30,80,140,.10);
+    --xr-bone:#7c8aa3; --xr-glow:0; --xr-bg:#f6f9fc;
+    color-scheme:light;
+  }
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .xr-bar,.xr-scanbar,.xr-lens{display:none!important}
+  .xr-live .xr-inside{clip-path:none!important}
+  .xr-live .xr-outside{mask:none!important;opacity:.4}
+  .xr-live .xr-label.off{opacity:1!important}
+  .stage.xr-stage{box-shadow:none}
+}
+
+/* ===== Handwritten notebook style — <figure class="stage xr-stage" data-style="handwritten"> (only when the user asks) ===== */
+:root.hand.hand{
+  --bg:#e9e4d8; --surface:#fdfbf4; --ink:#1f3a93; --muted:#4a5a8a; --line:#9fb7d6; --zone:#f3eedf;
+  --c1:#1f3a93; --c1-soft:rgba(64,196,255,.30);  --c2:#1e8449; --c2-soft:rgba(118,255,3,.32);
+  --c3:#b9770e; --c3-soft:rgba(255,235,59,.60);  --c4:#c0392b; --c4-soft:rgba(255,128,171,.40);
+  --c5:#7d3c98; --c5-soft:rgba(206,147,216,.40); --on-accent:#222; --shadow:rgba(0,0,0,.16);
+  --font:'Kalam','Patrick Hand','Segoe Print','Comic Sans MS',cursive;
+  --title:'Caveat','Kalam','Segoe Print','Bradley Hand',cursive;
+  --xr-film:#fdfbf4; --xr-shell:rgba(31,58,147,.05); --xr-edge:#4a5a8a; --xr-grid:rgba(31,58,147,.12);
+  --xr-scan:#c0392b; --xr-bone:#8a8f9c; --xr-glow:0; --xr-bg:var(--surface);
+  color-scheme:light;
+}
+.hand body::before{display:none}
+.hand .page{margin:24px auto;padding:40px 28px 48px 88px;box-shadow:0 2px 6px rgba(0,0,0,.15),0 12px 28px rgba(0,0,0,.12);
+  background:linear-gradient(90deg,transparent 62px,#e8a0a0 62px,#e8a0a0 64px,transparent 64px),
+             repeating-linear-gradient(var(--surface) 0,var(--surface) 31px,#c9dcef 31px,#c9dcef 32px)}
+@media (max-width:600px){.hand .page{margin:0;padding:24px 14px 40px 44px;
+  background:linear-gradient(90deg,transparent 30px,#e8a0a0 30px,#e8a0a0 32px,transparent 32px),
+             repeating-linear-gradient(var(--surface) 0,var(--surface) 31px,#c9dcef 31px,#c9dcef 32px)}}
+.hand .eyebrow{background:none;border:0;padding:0;font:700 22px/1 var(--title);letter-spacing:0;text-transform:none;color:var(--c4)}
+.hand .eyebrow::before{display:none}
+.hand h1{font-family:var(--title);font-size:clamp(42px,6vw,60px);font-weight:700;letter-spacing:0;color:#222;transform:rotate(-1deg);transform-origin:left}
+.hand h1 .accent{color:inherit;-webkit-background-clip:border-box;background-clip:border-box;
+  background:linear-gradient(transparent 58%,var(--c3-soft) 58%,var(--c3-soft) 92%,transparent 92%)}
+.hand .lede,.hand .note{color:var(--ink)}
+.hand .chips li{background:var(--c3-soft);border:0;border-radius:3px 8px 4px 9px;color:var(--ink)}
+.hand .chips b{color:#222}
+.hand h2{font-family:var(--title);font-size:30px;font-weight:700;color:#222}
+.hand .stage{border:2px solid #222;border-radius:4px 14px 6px 16px;box-shadow:2px 3px 0 rgba(0,0,0,.14)}
+.hand .stage.xr-stage{border-color:#222}
+.hand .xr-stage::before{display:none}
+.hand .xr-seg,.hand .xr-lensbtn{border:2px solid #222;font-family:var(--font)}
+.hand .xr-seg button+button{border-left:2px solid #222}
+.hand .xr-seg button[aria-pressed="true"],.hand .xr-lensbtn[aria-pressed="true"]{background:var(--c3-soft);color:#222}
+.hand .xr-bar{border:0;background:none}
+.hand .xr-shell{stroke-dasharray:none;stroke-width:2.4}
+.hand .xr-part,.hand .xr-line,.hand .xr-valve,.hand .xr-tube>path,.hand .xr-shell,.hand .xr-scanline{filter:none}
+.hand .t{font-family:var(--font)}
+.hand .steps li,.hand .card{border:2px solid #222;border-radius:4px 12px 6px 14px;box-shadow:2px 3px 0 rgba(0,0,0,.14)}
+.hand .steps b,.hand .card b{font-family:var(--title);font-size:22px}
+.hand .pl-cap b{color:#222}
+
+/* ===== Dense parts (bones, metal): the brightest white ===== */
+.xr-part.bone,.xr-tube.bone,.xr-line.bone{--xc:var(--xr-core,#e9fbff)}
+.xr-part.bone{fill:color-mix(in srgb,var(--xc) 16%,var(--xr-film));stroke-width:2.2}
+/* photos: .xr-photo = the original picture (outside layer); .xr-photo-xray = the same picture as a whole-scene x-ray (inside layer) */
+.xr-photo-xray{filter:url(#xr-photo-fx);opacity:var(--xr-photo-strength,1)}
+.xr-stage[data-tone="film"] .xr-photo-xray{filter:url(#xr-photo-film)}
+.xr-stage[data-photo]:not([data-look="color"]) .xr-inside{filter:none}
+.xr-stage[data-photo]:not([data-look="color"]) .xr-bloomed{filter:url(#xr-bloom)}
+
+/* ===== SCAN LOOK (default): monochrome cyan/white radiograph. data-look="color" keeps the multi-colour explainer look ===== */
+:root.look-scan{--c1:#5fd4ff;--c2:#2bb3ff;--c3:#bdf1ff;--c4:#ffffff;--c5:#4d8fb5;
+  --c1-soft:#0b2a45;--c2-soft:#0a2540;--c3-soft:#14364f;--c4-soft:#1a3a52;--c5-soft:#13293c}
+:root.look-scan[data-theme="light"]{--c1:#0a86b8;--c2:#0b6f9c;--c3:#2f9fc9;--c4:#06384f;--c5:#5a93b0;
+  --c1-soft:#d3ecf7;--c2-soft:#cfe5f2;--c3-soft:#dcf0f8;--c4-soft:#c9dde8;--c5-soft:#dbe8f0}
+:root.look-scan #arr-c1 path{fill:#5fd4ff!important} :root.look-scan #arr-c2 path{fill:#2bb3ff!important}
+:root.look-scan #arr-c3 path{fill:#bdf1ff!important} :root.look-scan #arr-c4 path{fill:#ffffff!important}
+:root.look-scan #arr-c5 path{fill:#4d8fb5!important} :root.look-scan #arr path{fill:#9fd0e4!important}
+.stage.xr-stage:not([data-look="color"]){
+  --bg:#030b1a; --surface:#06162b; --ink:#e9fbff; --muted:#9fd0e4; --line:#1b4a6e; --zone:#07203a; --on-accent:#021020; --shadow:rgba(0,0,0,.75);
+  --c1:#5fd4ff;--c2:#2bb3ff;--c3:#bdf1ff;--c4:#ffffff;--c5:#4d8fb5;
+  --c1-soft:#0b2a45;--c2-soft:#0a2540;--c3-soft:#14364f;--c4-soft:#1a3a52;--c5-soft:#13293c;
+  --xr-film:#031022; --xr-shell:rgba(95,212,255,.10); --xr-edge:rgba(120,224,255,.8); --xr-grid:rgba(95,212,255,.10);
+  --xr-scan:#5fd4ff; --xr-bone:#e9fbff; --xr-core:#e9fbff; --xr-glow:0;
+  --xr-bg:radial-gradient(ellipse 75% 70% at 50% 45%,#08213f 0%,#04122a 55%,#020814 100%);
+  color:var(--ink); border-color:#1b4a6e;
+}
+.xr-stage:not([data-look="color"]) .node[class]{fill:#061a33}
+.xr-stage:not([data-look="color"]) .xr-bone{opacity:.95;stroke:var(--xr-core)}
+.xr-stage:not([data-look="color"]) .xr-bone.wide{opacity:.55}
+.xr-stage:not([data-look="color"]) .xr-inside{filter:url(#xr-bloom)}
+.xr-stage:not([data-look="color"]) .xr-part{fill:color-mix(in srgb,var(--xc) 11%,var(--xr-film))}
+.xr-stage:not([data-look="color"]) .xr-part.dim{fill:color-mix(in srgb,var(--xc) 6%,var(--xr-film));stroke-opacity:.7}
+.xr-stage:not([data-look="color"]) .xr-part.bright{fill:color-mix(in srgb,var(--xc) 30%,var(--xr-film))}
+.xr-stage:not([data-look="color"]) .xr-shell{stroke-width:2.2}
+.xr-stage:not([data-look="color"]) .particle{fill:#f4fdff}
+.xr-stage:not([data-look="color"])::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(95,212,255,.05) 0 1px,transparent 1px 4px)}
+:root[data-theme="light"] .xr-stage:not([data-look="color"]){box-shadow:0 18px 40px -22px rgba(2,8,20,.6)}
+@media print{
+  .stage.xr-stage:not([data-look="color"]){
+    --bg:#ffffff; --surface:#ffffff; --ink:#0b2a3a; --muted:#3b6178; --line:#9fc3d6; --zone:#eef6fa; --on-accent:#ffffff;
+    --c1:#0a86b8;--c2:#0b6f9c;--c3:#2f9fc9;--c4:#06384f;--c5:#5a93b0;
+    --xr-film:#eef6fa; --xr-shell:rgba(10,90,140,.07); --xr-edge:rgba(10,70,110,.55); --xr-grid:rgba(10,80,130,.10);
+    --xr-scan:#0a86b8; --xr-bone:#0b2a3a; --xr-core:#0b2a3a; --xr-bg:#f6fafc; border-color:#9fc3d6;
+  }
+  .xr-stage:not([data-look="color"]) .xr-inside{filter:none!important}
+  .xr-stage:not([data-look="color"]) .node[class]{fill:#ffffff}
+  .xr-stage:not([data-look="color"]) .particle{fill:#0b2a3a}
+  .xr-stage:not([data-look="color"])::after{display:none}
+}
+.xr-stage:not([data-look="color"]) .xr-part{fill:color-mix(in srgb,var(--xc) 17%,var(--xr-film))}
+.xr-stage:not([data-look="color"]) .xr-tube>path.in{stroke:color-mix(in srgb,var(--xc) 24%,var(--xr-film))}
+
+/* ===== FILM TONE: neutral white/grey radiograph (data-tone="film"; the default when a photo is attached) ===== */
+:root.look-scan.tone-film{--c1:#cfd6dc;--c2:#aeb7be;--c3:#e8edf0;--c4:#ffffff;--c5:#7c858c;
+  --c1-soft:#1d2226;--c2-soft:#181c1f;--c3-soft:#252a2e;--c4-soft:#2d3338;--c5-soft:#1b1f22}
+:root.look-scan.tone-film[data-theme="light"]{--c1:#4b5760;--c2:#3b454c;--c3:#69757e;--c4:#12171a;--c5:#8a949b;
+  --c1-soft:#e0e5e8;--c2-soft:#dde2e5;--c3-soft:#e8ecee;--c4-soft:#d2d8db;--c5-soft:#e4e8ea}
+:root.look-scan.tone-film #arr-c1 path{fill:#cfd6dc!important} :root.look-scan.tone-film #arr-c2 path{fill:#aeb7be!important}
+:root.look-scan.tone-film #arr-c3 path{fill:#e8edf0!important} :root.look-scan.tone-film #arr-c4 path{fill:#ffffff!important}
+:root.look-scan.tone-film #arr-c5 path{fill:#7c858c!important}
+.stage.xr-stage[data-tone="film"]:not([data-look="color"]){
+  --bg:#060708; --surface:#0d0f11; --ink:#f4f6f7; --muted:#adb5bb; --line:#2f363b; --zone:#14171a; --on-accent:#060708;
+  --c1:#cfd6dc;--c2:#aeb7be;--c3:#e8edf0;--c4:#ffffff;--c5:#7c858c;
+  --c1-soft:#1d2226;--c2-soft:#181c1f;--c3-soft:#252a2e;--c4-soft:#2d3338;--c5-soft:#1b1f22;
+  --xr-film:#090b0c; --xr-shell:rgba(214,221,227,.07); --xr-edge:rgba(222,228,233,.7); --xr-grid:rgba(205,213,220,.07);
+  --xr-scan:#e4e9ec; --xr-bone:#ffffff; --xr-core:#ffffff;
+  --xr-bg:radial-gradient(ellipse 75% 70% at 50% 45%,#15181b 0%,#0b0d0f 60%,#050607 100%); border-color:#2f363b;
+}
+.xr-stage[data-tone="film"]:not([data-look="color"]) .node[class]{fill:#0f1214}
+.xr-stage[data-tone="film"]:not([data-look="color"]) .particle{fill:#ffffff}
+.xr-stage[data-tone="film"]:not([data-look="color"])::after{background:repeating-linear-gradient(0deg,rgba(220,226,231,.04) 0 1px,transparent 1px 4px)}
+@media print{
+  .stage.xr-stage[data-tone="film"]:not([data-look="color"]){
+    --bg:#ffffff; --surface:#ffffff; --ink:#12171a; --muted:#4b5760; --line:#bcc4ca; --zone:#f1f3f4; --on-accent:#ffffff;
+    --c1:#4b5760;--c2:#3b454c;--c3:#69757e;--c4:#12171a;--c5:#8a949b;
+    --xr-film:#f1f3f4; --xr-shell:rgba(60,70,78,.08); --xr-edge:rgba(40,50,58,.6); --xr-grid:rgba(60,70,78,.10);
+    --xr-scan:#4b5760; --xr-bone:#12171a; --xr-core:#12171a; --xr-bg:#f6f7f8; border-color:#bcc4ca;
+  }
+  .xr-stage[data-tone="film"]:not([data-look="color"]) .node[class]{fill:#ffffff}
+  .xr-stage[data-tone="film"]:not([data-look="color"]) .particle{fill:#12171a}
+}
+
+:root.look-scan{--xr-scan:#5fd4ff}
+:root.look-scan.tone-film{--xr-scan:#e4e9ec}
+.xr-stage[data-photo]:not([data-look="color"]) .xr-part{fill-opacity:.5}
+.xr-stage[data-photo]:not([data-look="color"]) .xr-part.dim{fill-opacity:.8}
+</style>
+</head>
+<body>
+<!-- Shared defs: gradients, shadow, arrowheads, icon library. Icons: a use element pointing at an i-* symbol id, e.g. i-sun (see SKILL.md) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="7" style="flood-color:var(--shadow)"/></filter>
+  <!-- card fill: surface → soft tint -->
+  <linearGradient id="g-c1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--c1-soft)"/></linearGradient>
+  <linearGradient id="g-c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--c2-soft)"/></linearGradient>
+  <linearGradient id="g-c3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--c3-soft)"/></linearGradient>
+  <linearGradient id="g-c4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--c4-soft)"/></linearGradient>
+  <linearGradient id="g-c5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--c5-soft)"/></linearGradient>
+  <!-- scene washes: fade = strong at top, rise = strong at bottom -->
+  <linearGradient id="fade-c1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c1-soft)"/><stop offset="1" style="stop-color:var(--c1-soft);stop-opacity:0"/></linearGradient>
+  <linearGradient id="fade-c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c2-soft)"/><stop offset="1" style="stop-color:var(--c2-soft);stop-opacity:.25"/></linearGradient>
+  <linearGradient id="fade-c3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c3-soft)"/><stop offset="1" style="stop-color:var(--c3-soft);stop-opacity:0"/></linearGradient>
+  <linearGradient id="fade-c4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c4-soft)"/><stop offset="1" style="stop-color:var(--c4-soft);stop-opacity:0"/></linearGradient>
+  <linearGradient id="fade-c5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c5-soft)"/><stop offset="1" style="stop-color:var(--c5-soft);stop-opacity:0"/></linearGradient>
+  <linearGradient id="rise-c1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--c1-soft)"/><stop offset="1" style="stop-color:var(--c1-soft);stop-opacity:.2"/></linearGradient>
+  <linearGradient id="rise-c2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--c2-soft)"/><stop offset="1" style="stop-color:var(--c2-soft);stop-opacity:.2"/></linearGradient>
+  <linearGradient id="rise-c3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--c3-soft)"/><stop offset="1" style="stop-color:var(--c3-soft);stop-opacity:.2"/></linearGradient>
+  <linearGradient id="rise-c4" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--c4-soft)"/><stop offset="1" style="stop-color:var(--c4-soft);stop-opacity:.2"/></linearGradient>
+  <linearGradient id="rise-c5" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--c5-soft)"/><stop offset="1" style="stop-color:var(--c5-soft);stop-opacity:.2"/></linearGradient>
+  <!-- arrowheads: one per colour (markers don't inherit the path colour) -->
+  <marker id="arr"    viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--muted)"/></marker>
+  <marker id="arr-c1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--c1)"/></marker>
+  <marker id="arr-c2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--c2)"/></marker>
+  <marker id="arr-c3" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--c3)"/></marker>
+  <marker id="arr-c4" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--c4)"/></marker>
+  <marker id="arr-c5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--c5)"/></marker>
+
+  <!-- ===== Icon library (24×24 line icons, colour = currentColor) ===== -->
+  <!-- nature & science -->
+  <symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/></g></symbol>
+  <symbol id="i-rain" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2M16 14v6M8 14v6M12 16v6"/></g></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5S12.5 5.5 12 3c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7z"/></g></symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7c.6.5 1.2 1 2.5 1C7 8 7 6 9.5 6s2.4 2 5 2 2.5-2 5-2c1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2s2.4 2 5 2 2.5-2 5-2c1.3 0 1.9.5 2.5 1M2 17c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2s2.4 2 5 2 2.5-2 5-2c1.3 0 1.9.5 2.5 1"/></g></symbol>
+  <symbol id="i-wind" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 16h8"/></g></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10z"/><path d="M2 21c0-3 1.9-5.4 5.1-6C9.5 14.5 12 13 13 12"/></g></symbol>
+  <symbol id="i-sprout" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V11M12 11C12 7 9 5 5 5c0 4 3 6 7 6zM12 13c0-4 3-6 7-6 0 4-3 6-7 6z"/></g></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5M12 2 5 12h4l-3 5h12l-3-5h4z"/></g></symbol>
+  <symbol id="i-mountain" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20 9 7l4 6 3-4 6 11z"/></g></symbol>
+  <symbol id="i-fire" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></g></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.5a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z"/></g></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></g></symbol>
+  <symbol id="i-atom" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></g></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10 2v6L4.5 18a2.5 2.5 0 0 0 2.2 4h10.6a2.5 2.5 0 0 0 2.2-4L14 8V2M7 15h10"/></g></symbol>
+  <symbol id="i-cell" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><circle cx="10" cy="11" r="3"/><path d="M16 16h.01M16.5 8h.01M7 17h.01"/></g></symbol>
+  <symbol id="i-dna" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2c0 7 10 7 10 14 0 2.5-1 4.5-2 6M17 2c0 7-10 7-10 14 0 2.5 1 4.5 2 6M8 6h8M8 18h8"/></g></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></g></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+  <!-- people & places -->
+  <symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></g></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 21a6 6 0 0 0-4-5.6"/></g></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8M5 9.5V21h14V9.5M10 21v-6h4v6"/></g></symbol>
+  <symbol id="i-factory" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21V9l6 4V9l6 4V4h6v17zM2 21h20"/></g></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21v-10M9.5 21v-10M14.5 21v-10M19 21v-10M2 10l10-7 10 7z"/></g></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h11v11H2zM13 9h4l4 4v3h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></g></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></g></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V3M4 4h13l-2.5 4.5L17 13H4"/></g></symbol>
+  <!-- tech -->
+  <symbol id="i-laptop" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M2 20h20"/></g></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></g></symbol>
+  <symbol id="i-server" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="7.5" rx="2"/><rect x="3" y="13.5" width="18" height="7.5" rx="2"/><path d="M7 6.8h.01M7 17.3h.01"/></g></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></g></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></g></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></g></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></g></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></g></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></g></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 21 2M17 6l3 3M14.5 8.5l2 2"/></g></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></g></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-5-5"/></g></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></g></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L3 21l2-6.2A8 8 0 1 1 21 12z"/></g></symbol>
+  <!-- business & ideas -->
+  <symbol id="i-coin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M15 9.5c-.4-1-1.5-1.7-3-1.7-1.7 0-3 .9-3 2.1 0 2.9 6 1.3 6 4.2 0 1.2-1.3 2.1-3 2.1-1.5 0-2.6-.7-3-1.7M12 6v1.8M12 16.2V18"/></g></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L22 7H6"/></g></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15l4-4 3 3 6-6"/></g></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></g></symbol>
+  <symbol id="i-idea" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></g></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h6"/></g></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14"/></g></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></g></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></g></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3 6.5 7 .8-5.2 4.8 1.5 7L12 17.6l-6.3 3.5 1.5-7L2 9.3l7-.8z"/></g></symbol>
+  <!-- status -->
+  <symbol id="i-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></g></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 21h20zM12 10v5M12 18h.01"/></g></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 9 6 6M15 9l-6 6"/></g></symbol>
+  <symbol id="i-loop" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12A9 9 0 0 1 18.5 5.8M18 2v4h-4M6 22v-4h4"/></g></symbol>
+  <!-- ===== X-ray extras: scan grid + scanner beam ===== -->
+  <pattern id="xr-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" style="stroke:var(--xr-grid)" stroke-width="1"/></pattern>
+  <!-- scan look: one cheap bloom pass over the whole inside layer -->
+  <filter id="xr-bloom" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="3.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <!-- attached photo -> whole-scene x-ray: grayscale, invert, dark-mid-tone curve, blurred edge glow screened on top, tone tint (cyan or film) -->
+  <filter id="xr-photo-fx" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0" result="g"/><feConvolveMatrix in="g" order="3" kernelMatrix="-1 -1 -1 -1 8 -1 -1 -1 -1" divisor="1" bias="0" preserveAlpha="true" edgeMode="duplicate" result="e0"/><feGaussianBlur in="e0" stdDeviation="1.3" result="e1"/><feComponentTransfer in="e1" result="e2"><feFuncR type="linear" slope="2.2"/><feFuncG type="linear" slope="2.2"/><feFuncB type="linear" slope="2.2"/></feComponentTransfer><feComponentTransfer in="g" result="inv"><feFuncR type="table" tableValues="1 0"/><feFuncG type="table" tableValues="1 0"/><feFuncB type="table" tableValues="1 0"/></feComponentTransfer><feComponentTransfer in="inv" result="curve"><feFuncR type="table" tableValues="0 0.008 0.025 0.055 0.1 0.16 0.24 0.34"/><feFuncG type="table" tableValues="0 0.008 0.025 0.055 0.1 0.16 0.24 0.34"/><feFuncB type="table" tableValues="0 0.008 0.025 0.055 0.1 0.16 0.24 0.34"/></feComponentTransfer><feGaussianBlur in="curve" stdDeviation="1.8" result="soft"/><feBlend in="e2" in2="soft" mode="screen" result="m"/><feColorMatrix in="m" type="matrix" values="0.30 0 0 0 0  0.85 0 0 0 0  1 0 0 0 0  0 0 0 1 0"/></filter>
+  <filter id="xr-photo-film" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="0" result="g"/><feConvolveMatrix in="g" order="3" kernelMatrix="-1 -1 -1 -1 8 -1 -1 -1 -1" divisor="1" bias="0" preserveAlpha="true" edgeMode="duplicate" result="e0"/><feGaussianBlur in="e0" stdDeviation="1.3" result="e1"/><feComponentTransfer in="e1" result="e2"><feFuncR type="linear" slope="2.2"/><feFuncG type="linear" slope="2.2"/><feFuncB type="linear" slope="2.2"/></feComponentTransfer><feComponentTransfer in="g" result="inv"><feFuncR type="table" tableValues="1 0"/><feFuncG type="table" tableValues="1 0"/><feFuncB type="table" tableValues="1 0"/></feComponentTransfer><feComponentTransfer in="inv" result="curve"><feFuncR type="table" tableValues="0 0.008 0.025 0.055 0.1 0.16 0.24 0.34"/><feFuncG type="table" tableValues="0 0.008 0.025 0.055 0.1 0.16 0.24 0.34"/><feFuncB type="table" tableValues="0 0.008 0.025 0.055 0.1 0.16 0.24 0.34"/></feComponentTransfer><feGaussianBlur in="curve" stdDeviation="1.8" result="soft"/><feBlend in="e2" in2="soft" mode="screen" result="m"/><feColorMatrix in="m" type="matrix" values="0.93 0 0 0 0  0.96 0 0 0 0  1 0 0 0 0  0 0 0 1 0"/></filter>
+  <linearGradient id="xr-beam" x1="1" y1="0" x2="0" y2="0"><stop offset="0" style="stop-color:var(--xr-scan);stop-opacity:.28"/><stop offset="1" style="stop-color:var(--xr-scan);stop-opacity:0"/></linearGradient>
+</defs></svg>
+
+<button class="theme-toggle" type="button" aria-label="Switch to light theme">☀</button>
+<main class="page">
+  <p class="eyebrow">X-ray · Photo</p>
+  <h1>X-ray of a sleeping <span class="accent">cat</span></h1>
+  <p class="lede">Drag the scanner across the photo: the picture turns into an x-ray of the whole scene, and a curled-up cat shows its skeleton.</p>
+  <ul class="chips"><li><b>1</b> photo, <b>2</b> layers</li><li>Curled up: <b>spine arched</b> like a bow</li><li><b>7</b> neck vertebrae, <b>13</b> pairs of ribs</li></ul>
+
+<figure class="stage xr-stage" data-tone="film">
+  <svg viewBox="0 0 960 830" data-scan="0.5" data-lens="110" role="img" aria-label="A cat curled up asleep on a sofa. The photo shows the cat; the scanner turns the photo into an x-ray of the whole scene and reveals the skeleton: skull, arched spine, ribs, shoulder blade, legs, pelvis and the tail curled round the body.">
+    <g class="xr-outside">
+      <image class="xr-photo" href="cat-curled-on-sofa.jpg" x="40" y="110" width="880" height="593" preserveAspectRatio="xMidYMid slice"/>
+    </g>
+    <g class="xr-inside">
+      <image class="xr-photo-xray" href="cat-curled-on-sofa.jpg" x="40" y="110" width="880" height="593" preserveAspectRatio="xMidYMid slice"/>
+      <g class="xr-bloomed">
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M483.8 244.2 Q497.3 302.1 556.2 316.1"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M501.3 232.1 Q515.6 303.2 586.7 322.6"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M519.2 221.6 Q526.8 302.8 604.2 332.8"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M537.7 214.5 Q526.8 299.9 599.5 348.7"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M557.9 210.7 Q535.5 296.2 603 355.4"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M578.6 209.3 Q547.6 290.9 607.8 356.1"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M599.5 209.7 Q564 285.1 616.3 351.6"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M620.3 211.8 Q581.9 278.6 625.1 343.9"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M640.5 215.9 Q598.8 271 629.9 334"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M659.7 222.7 Q616.5 264.4 634.8 322.6"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M677.3 232.7 Q635.4 261.8 642.8 313.1"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M694.5 244.9 Q659.8 266.3 663.4 307.6"/>
+        <path class="xr-bone" data-step="3" style="stroke-width:4.5" d="M711.6 257.9 Q685.2 273.5 687.4 304.5"/>
+        <ellipse class="xr-part c4 bright pulse" data-step="3" cx="518.3" cy="368.3" rx="21.0" ry="25.8"/>
+        <rect class="xr-part bone" data-step="2" x="209.3" y="329.9" width="34.4" height="24.9" rx="8.0" transform="rotate(-41.4 226.5 342.3)"/>
+        <rect class="xr-part bone" data-step="2" x="239.0" y="306.0" width="34.4" height="24.9" rx="8.0" transform="rotate(-35.0 256.2 318.4)"/>
+        <rect class="xr-part bone" data-step="2" x="272.3" y="287.4" width="34.4" height="24.9" rx="8.0" transform="rotate(-25.3 289.5 299.8)"/>
+        <rect class="xr-part bone" data-step="2" x="307.4" y="272.4" width="34.4" height="24.9" rx="8.0" transform="rotate(-21.3 324.6 284.8)"/>
+        <rect class="xr-part bone" data-step="2" x="343.4" y="260.0" width="34.4" height="24.9" rx="8.0" transform="rotate(-16.3 360.6 272.4)"/>
+        <rect class="xr-part bone" data-step="2" x="380.3" y="250.3" width="34.4" height="24.9" rx="8.0" transform="rotate(-14.3 397.5 262.7)"/>
+        <rect class="xr-part bone" data-step="2" x="417.4" y="241.3" width="34.4" height="24.9" rx="8.0" transform="rotate(-12.5 434.6 253.7)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M479.4 226.5 L481.4 208.2" transform="rotate(-35.0 479.4 237.9)"/><rect class="xr-part bone" data-step="2" x="469.4" y="225.5" width="20.1" height="24.9" rx="6.4" transform="rotate(-35.0 479.4 237.9)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M497.1 214.3 L499.1 192.2" transform="rotate(-33.1 497.1 225.7)"/><rect class="xr-part bone" data-step="2" x="487.1" y="213.3" width="20.1" height="24.9" rx="6.4" transform="rotate(-33.1 497.1 225.7)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M515.7 203.4 L517.7 179.4" transform="rotate(-27.2 515.7 214.8)"/><rect class="xr-part bone" data-step="2" x="505.7" y="202.4" width="20.1" height="24.9" rx="6.4" transform="rotate(-27.2 515.7 214.8)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M535.8 195.7 L537.8 173.6" transform="rotate(-14.5 535.8 207.1)"/><rect class="xr-part bone" data-step="2" x="525.8" y="194.7" width="20.1" height="24.9" rx="6.4" transform="rotate(-14.5 535.8 207.1)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M556.9 191.7 L558.9 171.5" transform="rotate(-7.1 556.9 203.1)"/><rect class="xr-part bone" data-step="2" x="546.9" y="190.7" width="20.1" height="24.9" rx="6.4" transform="rotate(-7.1 556.9 203.1)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M578.4 190.2 L580.4 171.9" transform="rotate(-1.0 578.4 201.6)"/><rect class="xr-part bone" data-step="2" x="568.4" y="189.2" width="20.1" height="24.9" rx="6.4" transform="rotate(-1.0 578.4 201.6)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M600.0 190.7 L602.0 174.4" transform="rotate(3.5 600.0 202.1)"/><rect class="xr-part bone" data-step="2" x="590.0" y="189.7" width="20.1" height="24.9" rx="6.4" transform="rotate(3.5 600.0 202.1)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M621.4 192.8 L623.4 178.4" transform="rotate(8.1 621.4 204.2)"/><rect class="xr-part bone" data-step="2" x="611.4" y="191.8" width="20.1" height="24.9" rx="6.4" transform="rotate(8.1 621.4 204.2)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M642.5 197.1 L644.5 184.6" transform="rotate(15.3 642.5 208.5)"/><rect class="xr-part bone" data-step="2" x="632.5" y="196.1" width="20.1" height="24.9" rx="6.4" transform="rotate(15.3 642.5 208.5)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M662.8 204.3 L664.8 192.7" transform="rotate(24.2 662.8 215.7)"/><rect class="xr-part bone" data-step="2" x="652.8" y="203.3" width="20.1" height="24.9" rx="6.4" transform="rotate(24.2 662.8 215.7)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M681.5 214.9 L683.5 204.3" transform="rotate(33.4 681.5 226.3)"/><rect class="xr-part bone" data-step="2" x="671.5" y="213.9" width="20.1" height="24.9" rx="6.4" transform="rotate(33.4 681.5 226.3)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M699.1 227.4 L701.1 216.8" transform="rotate(36.6 699.1 238.8)"/><rect class="xr-part bone" data-step="2" x="689.1" y="226.4" width="20.1" height="24.9" rx="6.4" transform="rotate(36.6 699.1 238.8)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M716.2 240.4 L718.2 229.8" transform="rotate(37.6 716.2 251.8)"/><rect class="xr-part bone" data-step="2" x="706.2" y="239.4" width="20.1" height="24.9" rx="6.4" transform="rotate(37.6 716.2 251.8)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M744.5 268.6 L746.5 256.1" transform="rotate(46.0 744.5 281.0)"/><rect class="xr-part bone" data-step="2" x="732.1" y="267.6" width="24.9" height="26.8" rx="8.0" transform="rotate(46.0 744.5 281.0)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M756.8 281.7 L758.8 269.2" transform="rotate(47.7 756.8 294.1)"/><rect class="xr-part bone" data-step="2" x="744.4" y="280.7" width="24.9" height="26.8" rx="8.0" transform="rotate(47.7 756.8 294.1)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M768.4 295.5 L770.4 283.0" transform="rotate(53.4 768.4 307.9)"/><rect class="xr-part bone" data-step="2" x="756.0" y="294.5" width="24.9" height="26.8" rx="8.0" transform="rotate(53.4 768.4 307.9)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M778.6 310.3 L780.6 297.8" transform="rotate(57.0 778.6 322.7)"/><rect class="xr-part bone" data-step="2" x="766.2" y="309.3" width="24.9" height="26.8" rx="8.0" transform="rotate(57.0 778.6 322.7)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M788.1 325.6 L790.1 313.1" transform="rotate(59.1 788.1 338.0)"/><rect class="xr-part bone" data-step="2" x="775.7" y="324.6" width="24.9" height="26.8" rx="8.0" transform="rotate(59.1 788.1 338.0)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M797.0 341.3 L799.0 328.8" transform="rotate(62.1 797.0 353.7)"/><rect class="xr-part bone" data-step="2" x="784.6" y="340.3" width="24.9" height="26.8" rx="8.0" transform="rotate(62.1 797.0 353.7)"/>
+        <path class="xr-line bone" data-step="2" style="stroke-width:2" d="M805.1 357.4 L807.1 344.9" transform="rotate(64.0 805.1 369.8)"/><rect class="xr-part bone" data-step="2" x="792.7" y="356.4" width="24.9" height="26.8" rx="8.0" transform="rotate(64.0 805.1 369.8)"/>
+        <rect class="xr-part bone" data-step="2" x="813.5" y="435.7" width="26.8" height="17.2" rx="5.5" transform="rotate(73.4 826.9 444.3)"/>
+        <rect class="xr-part bone" data-step="2" x="818.3" y="454.3" width="26.0" height="16.7" rx="5.3" transform="rotate(81.5 831.3 462.7)"/>
+        <rect class="xr-part bone" data-step="2" x="818.8" y="473.4" width="25.2" height="16.2" rx="5.2" transform="rotate(96.0 831.4 481.5)"/>
+        <rect class="xr-part bone" data-step="2" x="816.0" y="492.4" width="24.4" height="15.7" rx="5.0" transform="rotate(103.8 828.2 500.2)"/>
+        <rect class="xr-part bone" data-step="2" x="810.3" y="510.4" width="23.6" height="15.2" rx="4.8" transform="rotate(115.5 822.1 518.0)"/>
+        <rect class="xr-part bone" data-step="2" x="800.9" y="526.9" width="22.8" height="14.6" rx="4.7" transform="rotate(126.7 812.3 534.2)"/>
+        <rect class="xr-part bone" data-step="2" x="788.8" y="541.2" width="22.0" height="14.1" rx="4.5" transform="rotate(136.1 799.8 548.3)"/>
+        <rect class="xr-part bone" data-step="2" x="774.5" y="553.4" width="21.2" height="13.6" rx="4.4" transform="rotate(145.0 785.1 560.2)"/>
+        <rect class="xr-part bone" data-step="2" x="758.8" y="563.5" width="20.4" height="13.1" rx="4.2" transform="rotate(152.1 769.0 570.0)"/>
+        <rect class="xr-part bone" data-step="2" x="742.1" y="571.8" width="19.6" height="12.6" rx="4.0" transform="rotate(157.4 751.9 578.1)"/>
+        <rect class="xr-part bone" data-step="2" x="724.8" y="578.7" width="18.7" height="12.1" rx="3.9" transform="rotate(162.1 734.2 584.7)"/>
+        <rect class="xr-part bone" data-step="2" x="706.9" y="583.8" width="17.9" height="11.5" rx="3.7" transform="rotate(167.3 715.9 589.6)"/>
+        <rect class="xr-part bone" data-step="2" x="688.7" y="587.5" width="17.1" height="11.0" rx="3.5" transform="rotate(171.6 697.3 593.0)"/>
+        <rect class="xr-part bone" data-step="2" x="670.3" y="589.8" width="16.3" height="10.5" rx="3.4" transform="rotate(175.4 678.5 595.1)"/>
+        <rect class="xr-part bone" data-step="2" x="651.8" y="590.9" width="15.5" height="10.0" rx="3.2" transform="rotate(179.8 659.6 595.9)"/>
+        <rect class="xr-part bone" data-step="2" x="633.3" y="590.4" width="14.7" height="9.5" rx="3.0" transform="rotate(-174.7 640.7 595.1)"/>
+        <rect class="xr-part bone" data-step="2" x="615.0" y="587.9" width="13.9" height="9.0" rx="2.9" transform="rotate(-169.4 622.0 592.4)"/>
+        <rect class="xr-part bone" data-step="2" x="597.0" y="583.8" width="13.1" height="8.4" rx="2.7" transform="rotate(-163.5 603.6 588.0)"/>
+        <rect class="xr-part bone" data-step="2" x="580.0" y="576.9" width="12.3" height="7.9" rx="2.5" transform="rotate(-153.4 586.2 580.9)"/>
+        <rect class="xr-part bone" data-step="2" x="563.8" y="568.1" width="11.5" height="7.4" rx="2.4" transform="rotate(-150.1 569.6 571.8)"/>
+        <path id="cord" class="edge c1 flow" data-step="2" d="M226.5 342.3 L324.6 284.8 L434.6 253.7 L515.7 214.8 L578.4 201.6 L642.5 208.5 L699.1 238.8 L756.8 294.1 L788.1 338 L826.9 444.3 L828.2 500.2 L799.8 548.3 L751.9 578.1 L697.3 593 L640.7 595.1 L586.2 580.9"/>
+        <circle class="particle c1" data-step="2" r="4"><animateMotion dur="7.2s" repeatCount="indefinite"><mpath href="#cord"/></animateMotion></circle>
+        <circle class="particle c1" data-step="2" r="4"><animateMotion dur="7.2s" begin="-2.4s" repeatCount="indefinite"><mpath href="#cord"/></animateMotion></circle>
+        <circle class="particle c1" data-step="2" r="4"><animateMotion dur="7.2s" begin="-4.8s" repeatCount="indefinite"><mpath href="#cord"/></animateMotion></circle>
+        <path class="xr-part bone" data-step="1" d="M196.9 385.5 C196.9 343.4 242.8 326.2 288.7 341.5 C327 351 367.1 387.4 405.4 418 C426.4 423.7 437.9 439 426.4 450.5 L346.1 442.9 C307.8 452.4 246.6 444.8 216 421.8 C202.6 412.3 196.9 398.9 196.9 385.5 Z"/>
+        <circle class="xr-part bone" data-step="1" cx="315.5" cy="389.3" r="25.8" style="fill:var(--xr-film)"/>
+        <path class="xr-line bone" data-step="1" style="stroke-width:2.6" d="M231.3 345.3 C250.4 330 271.5 331.9 288.7 343.4"/>
+        <path class="xr-line bone" data-step="1" style="stroke-width:3" d="M307.8 419.9 C336.5 439 372.9 439 399.7 423.7"/>
+        <path class="xr-part bone" data-step="1" d="M407.3 439 L415 439 L412.1 462 Z M422.6 444.8 L429.3 444.8 L427.4 456.3 Z"/>
+        <path class="xr-part bone" data-step="1" d="M346.1 450.5 L422.6 465.8 C432.2 473.5 413 485 380.5 481.1 C355.7 479.2 336.5 463.9 346.1 450.5 Z"/>
+        <path class="xr-part bone" data-step="4" d="M478.1 240.1 C497.2 236.3 514.4 245.8 520.2 255.4 C499.1 297.5 466.6 343.4 447.5 372.1 L430.3 372.1 C426.4 362.5 432.2 351 439.8 339.6 C457 309 470.4 274.5 478.1 240.1 Z"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:3" d="M499.1 245.8 C487.7 282.2 466.6 320.4 441.7 362.5"/>
+        <path class="xr-part bone" data-step="4" d="M431.6 370.6 L428.5 387.6 L405.1 456.6 L398.6 472.4 L416 478.3 L420.5 461.8 L443.9 392.8 L451.9 377.4 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="441.7" cy="374.0" rx="13.4" ry="12.3" transform="rotate(109 441.7 374.0)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="407.3" cy="475.4" rx="11.5" ry="10.6" transform="rotate(109 407.3 475.4)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M435.5 392.3 L413.5 457.1"/>
+        <path class="xr-part bone" data-step="4" d="M402.4 475.5 L393.4 489.5 L350.5 545.4 L339.6 558 L348.7 565 L358.1 551.2 L401 495.3 L412.2 482.9 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="407.3" cy="479.2" rx="7.7" ry="7.0" transform="rotate(128 407.3 479.2)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="344.2" cy="561.5" rx="7.2" ry="6.6" transform="rotate(128 344.2 561.5)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M395.9 494 L355.5 546.7"/>
+        <path class="xr-part bone" data-step="4" d="M412.5 472.4 L404.2 487 L363.9 545.5 L353.2 558.4 L362 564.5 L370.2 549.9 L410.5 491.3 L421.3 478.4 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="416.9" cy="475.4" rx="6.7" ry="6.2" transform="rotate(125 416.9 475.4)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="357.6" cy="561.5" rx="6.7" ry="6.2" transform="rotate(125 357.6 561.5)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M406.2 490.9 L368.2 546"/>
+        <path class="xr-part bone" data-step="4" d="M343.3 572.6 L341.4 576.1 L330.9 589.3 L328.4 592.4 L333.2 596.2 L335.7 593.1 L346.1 579.9 L349.1 577.2 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="346.2" cy="574.9" rx="4.6" ry="4.2" transform="rotate(128 346.2 574.9)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="330.8" cy="594.3" rx="3.8" ry="3.5" transform="rotate(128 330.8 594.3)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M343.4 578.4 L333.6 590.8"/>
+        <path class="xr-part bone" data-step="4" d="M327.9 592 L326.7 594.6 L319.4 603.7 L317.7 605.9 L322.5 609.7 L324.2 607.5 L331.5 598.4 L333.7 596.6 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="330.8" cy="594.3" rx="4.6" ry="4.2" transform="rotate(128 330.8 594.3)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="320.1" cy="607.8" rx="3.8" ry="3.5" transform="rotate(128 320.1 607.8)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M328.9 596.7 L322 605.3"/>
+        <path class="xr-part bone" data-step="4" d="M333.6 564.9 L331.7 568.4 L321.2 581.6 L318.7 584.7 L323.5 588.5 L326 585.4 L336.5 572.2 L339.4 569.5 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="336.5" cy="567.2" rx="4.6" ry="4.2" transform="rotate(128 336.5 567.2)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="321.1" cy="586.6" rx="3.8" ry="3.5" transform="rotate(128 321.1 586.6)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M333.7 570.7 L323.9 583.1"/>
+        <path class="xr-part bone" data-step="4" d="M318.2 584.3 L317 586.9 L309.7 596 L308 598.1 L312.8 601.9 L314.5 599.8 L321.8 590.7 L324 588.9 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="321.1" cy="586.6" rx="4.6" ry="4.2" transform="rotate(128 321.1 586.6)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="310.4" cy="600.0" rx="3.8" ry="3.5" transform="rotate(128 310.4 600.0)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M319.2 589 L312.3 597.6"/>
+        <path class="xr-part bone" data-step="4" d="M323.9 557.2 L322 560.7 L311.5 573.9 L309 577 L313.8 580.8 L316.3 577.7 L326.8 564.5 L329.7 561.8 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="326.8" cy="559.5" rx="4.6" ry="4.2" transform="rotate(128 326.8 559.5)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="311.4" cy="578.9" rx="3.8" ry="3.5" transform="rotate(128 311.4 578.9)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M324 563 L314.2 575.4"/>
+        <path class="xr-part bone" data-step="4" d="M308.5 576.6 L307.3 579.2 L300 588.3 L298.3 590.4 L303.1 594.2 L304.8 592.1 L312.1 583 L314.3 581.2 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="311.4" cy="578.9" rx="4.6" ry="4.2" transform="rotate(128 311.4 578.9)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="300.7" cy="592.3" rx="3.8" ry="3.5" transform="rotate(128 300.7 592.3)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M309.5 581.3 L302.7 589.9"/>
+        <path class="xr-part bone" data-step="4" d="M397.9 480.3 L377.8 489.3 L290.6 523.2 L269.8 530.4 L273.1 539 L293.4 530.3 L380.5 496.5 L401.5 489.6 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="399.7" cy="485.0" rx="6.2" ry="5.7" transform="rotate(159 399.7 485.0)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="271.5" cy="534.7" rx="5.7" ry="5.3" transform="rotate(159 271.5 534.7)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M376.6 493.9 L294.5 525.7"/>
+        <path class="xr-part bone" data-step="4" d="M241.1 550.8 L237.3 552.4 L220.9 556.5 L217.1 557.4 L218.6 563.3 L222.4 562.4 L238.8 558.3 L242.8 558 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="241.9" cy="554.4" rx="4.6" ry="4.2" transform="rotate(166 241.9 554.4)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="217.8" cy="560.4" rx="3.8" ry="3.5" transform="rotate(166 217.8 560.4)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M237.6 555.5 L222.2 559.3"/>
+        <path class="xr-part bone" data-step="4" d="M216.9 556.8 L214.4 558.1 L203.1 560.9 L200.4 561.5 L201.9 567.5 L204.5 566.8 L215.9 564 L218.7 563.9 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="217.8" cy="560.4" rx="4.6" ry="4.2" transform="rotate(166 217.8 560.4)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="201.1" cy="564.5" rx="3.8" ry="3.5" transform="rotate(166 201.1 564.5)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M214.8 561.1 L204.1 563.8"/>
+        <path class="xr-part bone" data-step="4" d="M238.1 538.8 L234.4 540.3 L218 544.4 L214.1 545.3 L215.6 551.3 L219.4 550.3 L235.8 546.3 L239.8 545.9 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="239.0" cy="542.3" rx="4.6" ry="4.2" transform="rotate(166 239.0 542.3)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="214.8" cy="548.3" rx="3.8" ry="3.5" transform="rotate(166 214.8 548.3)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M234.6 543.4 L219.2 547.2"/>
+        <path class="xr-part bone" data-step="4" d="M214 544.8 L211.4 546 L200.1 548.8 L197.4 549.5 L198.9 555.4 L201.5 554.8 L212.9 551.9 L215.7 551.9 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="214.8" cy="548.3" rx="4.6" ry="4.2" transform="rotate(166 214.8 548.3)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="198.1" cy="552.4" rx="3.8" ry="3.5" transform="rotate(166 198.1 552.4)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M211.8 549.1 L201.1 551.7"/>
+        <path class="xr-part bone" data-step="4" d="M235.1 526.7 L231.4 528.3 L215 532.3 L211.1 533.3 L212.6 539.2 L216.4 538.3 L232.8 534.2 L236.9 533.9 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="236.0" cy="530.3" rx="4.6" ry="4.2" transform="rotate(166 236.0 530.3)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="211.8" cy="536.3" rx="3.8" ry="3.5" transform="rotate(166 211.8 536.3)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M231.6 531.4 L216.2 535.2"/>
+        <path class="xr-part bone" data-step="4" d="M211 532.7 L208.4 533.9 L197.1 536.8 L194.4 537.4 L195.9 543.4 L198.6 542.7 L209.9 539.9 L212.7 539.8 Z"/>
+        <ellipse class="xr-part bone" data-step="4" cx="211.8" cy="536.3" rx="4.6" ry="4.2" transform="rotate(166 211.8 536.3)"/>
+        <ellipse class="xr-part bone" data-step="4" cx="195.1" cy="540.4" rx="3.8" ry="3.5" transform="rotate(166 195.1 540.4)"/>
+        <path class="xr-line bone" data-step="4" style="stroke-width:1.2;opacity:.5" d="M208.8 537 L198.2 539.6"/>
+        <path class="xr-part bone" data-step="5" d="M765 320.4 C770.8 312.1 789 318.5 797.6 328.1 C806.2 337.7 810.3 360.3 816.7 377.8 C823.1 395.4 834.9 420.9 835.8 433.3 C836.8 445.7 830.4 449.2 822.4 452.4 C814.5 455.6 796.3 456.6 788 452.4 C779.7 448.3 776.8 440 772.7 427.6 C768.6 415.1 764.4 395.7 763.1 377.8 C761.9 360 759.3 328.7 765 320.4 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="811.0" cy="423.7" rx="13.4" ry="9.6" style="fill:var(--xr-film)"/>
+        <circle class="xr-part bone" data-step="5" cx="782.3" cy="418.0" r="13.4" style="fill:var(--xr-film)"/>
+        <path class="xr-part bone" data-step="5" d="M776.8 411.6 L762.4 424.3 L694.8 468.5 L676.9 476 L688.6 493.9 L702.6 480.6 L770.3 436.3 L787.7 428.2 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="782.3" cy="419.9" rx="12.4" ry="11.4" transform="rotate(147 782.3 419.9)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="682.8" cy="485.0" rx="13.4" ry="12.3" transform="rotate(147 682.8 485.0)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M764.4 431.6 L700.7 473.2"/>
+        <ellipse class="xr-part bone" data-step="5" cx="675.1" cy="479.2" rx="8.6" ry="12.4" transform="rotate(30 675.1 479.2)"/>
+        <path class="xr-part bone" data-step="5" d="M686.2 482.5 L668.4 496.1 L585.2 539 L564.8 547.7 L571.2 559.9 L590 548.4 L673.3 505.5 L694.6 498.9 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="690.4" cy="490.7" rx="11.5" ry="10.6" transform="rotate(153 690.4 490.7)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="568.0" cy="553.8" rx="8.6" ry="7.9" transform="rotate(153 568.0 553.8)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M668.4 502.1 L590 542.5"/>
+        <path class="xr-part bone" data-step="5" d="M696.7 491.8 L677.4 502.8 L594.1 547 L574.2 556.9 L577.1 562.3 L596.4 551.3 L679.6 507 L699.5 497.2 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="698.1" cy="494.5" rx="3.8" ry="3.5" transform="rotate(152 698.1 494.5)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="575.7" cy="559.6" rx="3.8" ry="3.5" transform="rotate(152 575.7 559.6)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M676 506.2 L597.7 547.9"/>
+        <path class="xr-part bone" data-step="5" d="M569.9 546.2 L548.9 519.4 L539.3 527 L554.6 561.5 Z"/>
+        <path class="xr-part bone" data-step="5" d="M555.8 555.8 L551.4 559.8 L530.6 574.1 L525.4 577.1 L530.2 584.1 L534.9 580.4 L555.7 566.1 L561 563.3 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="558.4" cy="559.6" rx="5.7" ry="5.3" transform="rotate(145 558.4 559.6)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="527.8" cy="580.6" rx="5.3" ry="4.8" transform="rotate(145 527.8 580.6)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M552.9 563.4 L533.3 576.8"/>
+        <path class="xr-part bone" data-step="5" d="M524.9 591.4 L523.1 593.5 L513.7 600.5 L511.5 602.2 L514.7 606.5 L516.9 604.8 L526.3 597.8 L528.8 596.6 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="526.9" cy="594.0" rx="4.0" ry="3.7" transform="rotate(143 526.9 594.0)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="513.1" cy="604.3" rx="3.3" ry="3.1" transform="rotate(143 513.1 604.3)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M524.4 595.9 L515.6 602.5"/>
+        <path class="xr-part bone" data-step="5" d="M511.2 601.8 L509.8 603.5 L502.5 608.9 L500.8 610.2 L504 614.5 L505.7 613.2 L513 607.8 L515 606.9 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="513.1" cy="604.3" rx="4.0" ry="3.7" transform="rotate(143 513.1 604.3)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="502.4" cy="612.4" rx="3.3" ry="3.1" transform="rotate(143 502.4 612.4)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M511.2 605.8 L504.3 610.9"/>
+        <path class="xr-part bone" data-step="5" d="M500.5 609.8 L499.6 611.1 L494.3 615 L493.1 616 L496.3 620.2 L497.6 619.3 L502.8 615.4 L504.3 614.9 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="502.4" cy="612.4" rx="4.0" ry="3.7" transform="rotate(143 502.4 612.4)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="494.7" cy="618.1" rx="3.3" ry="3.1" transform="rotate(143 494.7 618.1)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M501 613.4 L496.1 617.1"/>
+        <path class="xr-part bone" data-step="5" d="M519.2 583.8 L517.3 585.9 L508 592.9 L505.7 594.5 L509 598.8 L511.2 597.2 L520.5 590.1 L523.1 588.9 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="521.1" cy="586.3" rx="4.0" ry="3.7" transform="rotate(143 521.1 586.3)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="507.4" cy="596.7" rx="3.3" ry="3.1" transform="rotate(143 507.4 596.7)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M518.7 588.2 L509.8 594.8"/>
+        <path class="xr-part bone" data-step="5" d="M505.4 594.1 L504 595.8 L496.8 601.3 L495 602.6 L498.3 606.9 L500 605.6 L507.2 600.1 L509.3 599.2 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="507.4" cy="596.7" rx="4.0" ry="3.7" transform="rotate(143 507.4 596.7)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="496.6" cy="604.7" rx="3.3" ry="3.1" transform="rotate(143 496.6 604.7)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M505.4 598.1 L498.6 603.3"/>
+        <path class="xr-part bone" data-step="5" d="M494.7 602.1 L493.8 603.5 L488.6 607.4 L487.4 608.3 L490.6 612.6 L491.8 611.7 L497 607.8 L498.6 607.3 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="496.6" cy="604.7" rx="4.0" ry="3.7" transform="rotate(143 496.6 604.7)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="489.0" cy="610.5" rx="3.3" ry="3.1" transform="rotate(143 489.0 610.5)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M495.3 605.7 L490.4 609.4"/>
+        <path class="xr-part bone" data-step="5" d="M513.5 576.1 L511.6 578.2 L502.2 585.2 L500 586.9 L503.2 591.2 L505.4 589.5 L514.8 582.5 L517.3 581.3 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="515.4" cy="578.7" rx="4.0" ry="3.7" transform="rotate(143 515.4 578.7)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="501.6" cy="589.0" rx="3.3" ry="3.1" transform="rotate(143 501.6 589.0)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M512.9 580.6 L504.1 587.2"/>
+        <path class="xr-part bone" data-step="5" d="M499.7 586.5 L498.3 588.2 L491 593.6 L489.3 594.9 L492.5 599.2 L494.2 597.9 L501.5 592.5 L503.5 591.6 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="501.6" cy="589.0" rx="4.0" ry="3.7" transform="rotate(143 501.6 589.0)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="490.9" cy="597.1" rx="3.3" ry="3.1" transform="rotate(143 490.9 597.1)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M499.7 590.5 L492.8 595.6"/>
+        <path class="xr-part bone" data-step="5" d="M489 594.5 L488.1 595.8 L482.9 599.7 L481.6 600.7 L484.9 604.9 L486.1 604 L491.3 600.1 L492.8 599.6 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="490.9" cy="597.1" rx="4.0" ry="3.7" transform="rotate(143 490.9 597.1)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="483.3" cy="602.8" rx="3.3" ry="3.1" transform="rotate(143 483.3 602.8)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M489.5 598.1 L484.6 601.8"/>
+        <path class="xr-part bone" data-step="5" d="M507.7 568.5 L505.8 570.6 L496.5 577.6 L494.3 579.2 L497.5 583.5 L499.7 581.9 L509.1 574.8 L511.6 573.6 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="509.7" cy="571.0" rx="4.0" ry="3.7" transform="rotate(143 509.7 571.0)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="495.9" cy="581.4" rx="3.3" ry="3.1" transform="rotate(143 495.9 581.4)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M507.2 572.9 L498.4 579.5"/>
+        <path class="xr-part bone" data-step="5" d="M493.9 578.8 L492.6 580.5 L485.3 586 L483.6 587.3 L486.8 591.6 L488.5 590.3 L495.8 584.8 L497.8 583.9 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="495.9" cy="581.4" rx="4.0" ry="3.7" transform="rotate(143 495.9 581.4)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="485.2" cy="589.4" rx="3.3" ry="3.1" transform="rotate(143 485.2 589.4)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M493.9 582.8 L487.1 588"/>
+        <path class="xr-part bone" data-step="5" d="M483.2 586.8 L482.3 588.2 L477.1 592.1 L475.9 593 L479.1 597.3 L480.3 596.4 L485.5 592.5 L487.1 592 Z"/>
+        <ellipse class="xr-part bone" data-step="5" cx="485.2" cy="589.4" rx="4.0" ry="3.7" transform="rotate(143 485.2 589.4)"/>
+        <ellipse class="xr-part bone" data-step="5" cx="477.5" cy="595.1" rx="3.3" ry="3.1" transform="rotate(143 477.5 595.1)"/>
+        <path class="xr-line bone" data-step="5" style="stroke-width:1.2;opacity:.5" d="M483.8 590.4 L478.9 594.1"/>
+      </g>
+    </g>
+    <g class="xr-labels">
+<g class="xr-label" data-focus-x="461"><g data-step="2">
+  <path class="leader" d="M136.0 88 L307.8 287.9"/><circle class="dot" cx="307.8" cy="287.9" r="3"/>
+  <g class="lift">
+    <rect class="node c4" x="24" y="20" width="224" height="68" rx="16"/>
+    <circle class="chip c4" cx="58" cy="54" r="20"/>
+    <use href="#i-link" class="ico on" x="46" y="42" width="24" height="24"/>
+    <text class="t" x="88" y="50">Neck vertebrae</text>
+    <text class="t sub" x="88" y="71">7 bones, arched</text>
+  </g>
+  <g class="badge c4" transform="translate(24,20)"><circle r="13"/><text text-anchor="middle" dy="4.5">2</text></g>
+</g></g>
+<g class="xr-label" data-focus-x="523"><g data-step="4">
+  <path class="leader" d="M377.0 88 L489.6 282.2"/><circle class="dot" cx="489.6" cy="282.2" r="3"/>
+  <g class="lift">
+    <rect class="node c1" x="265" y="20" width="224" height="68" rx="16"/>
+    <circle class="chip c1" cx="299" cy="54" r="20"/>
+    <use href="#i-wave" class="ico on" x="287" y="42" width="24" height="24"/>
+    <text class="t" x="329" y="50">Shoulder blade</text>
+    <text class="t sub" x="329" y="71">no collar bone</text>
+  </g>
+  <g class="badge c1" transform="translate(265,20)"><circle r="13"/><text text-anchor="middle" dy="4.5">4</text></g>
+</g></g>
+<g class="xr-label" data-focus-x="729"><g data-step="3">
+  <path class="leader" d="M617.0 88 L606.3 328.1"/><circle class="dot" cx="606.3" cy="328.1" r="3"/>
+  <g class="lift">
+    <rect class="node c5" x="505" y="20" width="224" height="68" rx="16"/>
+    <circle class="chip c5" cx="539" cy="54" r="20"/>
+    <use href="#i-heart" class="ico on" x="527" y="42" width="24" height="24"/>
+    <text class="t" x="569" y="50">Ribs</text>
+    <text class="t sub" x="569" y="71">13 pairs, a cage</text>
+  </g>
+  <g class="badge c5" transform="translate(505,20)"><circle r="13"/><text text-anchor="middle" dy="4.5">3</text></g>
+</g></g>
+<g class="xr-label" data-focus-x="840"><g data-step="5">
+  <path class="leader" d="M858.0 88 L799.5 368.3"/><circle class="dot" cx="799.5" cy="368.3" r="3"/>
+  <g class="lift">
+    <rect class="node c2" x="746" y="20" width="224" height="68" rx="16"/>
+    <circle class="chip c2" cx="780" cy="54" r="20"/>
+    <use href="#i-gear" class="ico on" x="768" y="42" width="24" height="24"/>
+    <text class="t" x="810" y="50">Pelvis</text>
+    <text class="t sub" x="810" y="71">the hips</text>
+  </g>
+  <g class="badge c2" transform="translate(746,20)"><circle r="13"/><text text-anchor="middle" dy="4.5">5</text></g>
+</g></g>
+<g class="xr-label" data-focus-x="442"><g data-step="1">
+  <path class="leader" d="M136.0 742 L307.8 444.8"/><circle class="dot" cx="307.8" cy="444.8" r="3"/>
+  <g class="lift">
+    <rect class="node c1" x="24" y="742" width="224" height="68" rx="16"/>
+    <circle class="chip c1" cx="58" cy="776" r="20"/>
+    <use href="#i-search" class="ico on" x="46" y="764" width="24" height="24"/>
+    <text class="t" x="88" y="772">Skull</text>
+    <text class="t sub" x="88" y="793">protects the brain</text>
+  </g>
+  <g class="badge c1" transform="translate(24,742)"><circle r="13"/><text text-anchor="middle" dy="4.5">1</text></g>
+</g></g>
+<g class="xr-label" data-focus-x="423"><g data-step="4">
+  <path class="leader" d="M377.0 742 L376.7 517.5"/><circle class="dot" cx="376.7" cy="517.5" r="3"/>
+  <g class="lift">
+    <rect class="node c1" x="265" y="742" width="224" height="68" rx="16"/>
+    <circle class="chip c1" cx="299" cy="776" r="20"/>
+    <use href="#i-wave" class="ico on" x="287" y="764" width="24" height="24"/>
+    <text class="t" x="329" y="772">Front leg bones</text>
+    <text class="t sub" x="329" y="793">tucked under the chin</text>
+  </g>
+</g></g>
+<g class="xr-label" data-focus-x="690"><g data-step="5">
+  <path class="leader" d="M617.0 742 L633.0 521.3"/><circle class="dot" cx="633.0" cy="521.3" r="3"/>
+  <g class="lift">
+    <rect class="node c2" x="505" y="742" width="224" height="68" rx="16"/>
+    <circle class="chip c2" cx="539" cy="776" r="20"/>
+    <use href="#i-gear" class="ico on" x="527" y="764" width="24" height="24"/>
+    <text class="t" x="569" y="772">Hind leg bones</text>
+    <text class="t sub" x="569" y="793">folded: femur, tibia</text>
+  </g>
+</g></g>
+<g class="xr-label" data-focus-x="844"><g data-step="2">
+  <path class="leader" d="M858.0 742 L776.5 567.2"/><circle class="dot" cx="776.5" cy="567.2" r="3"/>
+  <g class="lift">
+    <rect class="node c4" x="746" y="742" width="224" height="68" rx="16"/>
+    <circle class="chip c4" cx="780" cy="776" r="20"/>
+    <use href="#i-link" class="ico on" x="768" y="764" width="24" height="24"/>
+    <text class="t" x="810" y="772">Tail vertebrae</text>
+    <text class="t sub" x="810" y="793">about 20 to 23</text>
+  </g>
+</g></g>
+    </g>
+  </svg>
+  <figcaption>Drag the scanner (or press the arrow keys): the photo on the right turns into an x-ray on the left. Point at a step below to highlight it.</figcaption>
+</figure>
+<p class="scroll-hint">← swipe the diagram →</p>
+<ul class="legend">
+  <li><span class="sw c4"></span>Spine and tail (white)</li>
+  <li><span class="sw c1"></span>Skull and front legs (light grey)</li>
+  <li><span class="sw c2"></span>Pelvis and hind legs (grey)</li>
+  <li><span class="sw c5"></span>Ribs and chest (dim)</li>
+  <li><span class="sw line"></span>Moving dashes = nerve signals down the spinal cord</li>
+</ul>
+
+<h2>How to read it</h2>
+<ol class="steps">
+  <li class="c1"><b>Skull and jaw</b><span>A cat's skull is short and round, with big eye sockets and long canine teeth. The lower jaw, the mandible, hangs below it.</span></li>
+  <li class="c4"><b>The arched spine</b><span>Seven neck, thirteen chest and seven lower-back vertebrae form the curve that lets a cat curl into a ball. The tail vertebrae wrap round the body. The spinal cord runs inside.</span></li>
+  <li class="c5"><b>Rib cage</b><span>Thirteen pairs of ribs arch from the chest vertebrae towards the breastbone. They protect the heart and lungs, and they curl up with the spine.</span></li>
+  <li class="c1"><b>Front legs</b><span>A cat has only a tiny collar bone, so muscles hold the shoulder blade to the ribs. This lets the front legs reach far forward. Here they lie folded under the chin.</span></li>
+  <li class="c2"><b>Hips and hind legs</b><span>The pelvis joins the spine to the hind legs. Folded up, the femur and the tibia lie side by side with the long foot bones.</span></li>
+</ol>
+
+<h2>Key takeaways</h2>
+<div class="cards">
+  <div class="card c4"><svg aria-hidden="true"><use href="#i-idea"/></svg><b>Flexible by design</b><p>A cat's backbone has about 50 small bones with soft discs between them. That is why it can curl up so tightly.</p></div>
+  <div class="card c1"><svg aria-hidden="true"><use href="#i-alert"/></svg><b>An illustration, not a scan</b><p>The photo is filtered to look like an x-ray, and the skeleton is a drawing placed by eye on the cat. It is not a real x-ray, and not made by AI.</p></div>
+  <div class="card c2"><svg aria-hidden="true"><use href="#i-target"/></svg><b>Walks on its toes</b><p>Like a dog, a cat stands on its toes. The part of the hind leg that points backwards is the ankle, the hock.</p></div>
+</div>
+<h2>Sources</h2>
+<ul class="legend" style="display:block">
+  <li>Photo: "Cat-sleeping-curled-up.jpg" by Sonkiki, Wikimedia Commons, <b>CC0</b> (public domain dedication): <code style="overflow-wrap:anywhere">commons.wikimedia.org/wiki/File:Cat-sleeping-curled-up.jpg</code>. Cropped and resized.</li>
+</ul>
+<p class="note">Simplified, and not a real radiograph. The picture on the left of the scanner is the same photo, filtered into an x-ray look (grey tones, inverted, with glowing edges). The skeleton is drawn over it by eye to match the cat's curled pose, so the exact positions of the bones are approximate. A cat has about 20 to 23 tail vertebrae, and the breastbone, the toes and the skull are simplified. Photo credit: Sonkiki, CC0.</p>
+
+</main>
+<script>
+/* Step focus + walkthrough player. Built automatically from the first .stage svg and ol.steps:
+   - hovering / tapping step N highlights every [data-step~="N"] element (and vice versa);
+   - a player bar (play/pause, prev/next, progress, caption) is inserted inside the stage.
+   No dependencies; nothing to add to the content markup. */
+(() => {
+  const svg = document.querySelector('.stage > svg'), items = [...document.querySelectorAll('ol.steps > li')];
+  if (!svg || !items.length) return;
+  const N = items.length, fig = svg.closest('.stage');
+  let pinned = null, cur = 0, playing = false, timer = null;
+  const set = n => {
+    svg.classList.toggle('focusing', n != null);
+    svg.querySelectorAll('[data-step]').forEach(el => el.classList.toggle('on', n != null && el.dataset.step.split(' ').includes(String(n))));
+    items.forEach((li, i) => li.classList.toggle('on', n === i + 1));
+  };
+
+  /* ---- player UI ---- */
+  const PLAY = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>';
+  const PAUSE = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>';
+  const title = li => (li.querySelector('b')?.textContent || '').trim();
+  const body = li => (li.querySelector('span')?.textContent || li.textContent.replace(title(li), '')).trim();
+  const bar = document.createElement('div');
+  bar.className = 'player';
+  bar.innerHTML = `<button class="pl-play" type="button" aria-label="Play walkthrough">${PLAY}</button>
+    <button class="pl-nav" type="button" data-d="-1" aria-label="Previous step"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="pl-nav" type="button" data-d="1" aria-label="Next step"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="pl-track">${items.map((li, i) => `<button class="pl-seg ${li.className}" type="button" aria-label="Step ${i + 1}: ${title(li)}"><i><s></s></i></button>`).join('')}</div>
+    <p class="pl-cap" aria-live="polite"><span class="pl-n">${N} steps</span><b>Walkthrough</b> Press play to go through it step by step.</p>`;
+  fig.insertBefore(bar, fig.querySelector('figcaption'));
+  const btn = bar.querySelector('.pl-play'), segs = [...bar.querySelectorAll('.pl-seg')], cap = bar.querySelector('.pl-cap');
+  const dur = li => Math.min(9000, Math.max(3500, body(li).split(/\s+/).length * 280));
+
+  const show = n => {
+    cur = n; pinned = n || null; set(pinned);
+    segs.forEach((s, i) => {
+      s.classList.toggle('done', i + 1 < n);
+      s.classList.remove('active'); void s.offsetWidth;        // restart the fill animation
+      s.classList.toggle('active', i + 1 === n);
+      s.style.setProperty('--dur', n ? dur(items[n - 1]) + 'ms' : '0ms');
+    });
+    cap.innerHTML = n
+      ? `<span class="pl-n">${n} / ${N}</span><b>${title(items[n - 1])}</b> ${body(items[n - 1])}`
+      : `<span class="pl-n">${N} steps</span><b>Walkthrough</b> Press play to go through it step by step.`;
+  };
+  const tick = () => {
+    if (cur >= N) { stop(); show(0); cap.innerHTML = `<span class="pl-n">done</span><b>That's all ${N} steps.</b> Press play to watch again.`; return; }
+    show(cur + 1);
+    timer = setTimeout(tick, dur(items[cur - 1]));
+  };
+  const play = () => { playing = true; bar.classList.add('playing'); btn.innerHTML = PAUSE; btn.setAttribute('aria-label', 'Pause walkthrough');
+    if (cur >= N) cur = 0; if (cur) { show(cur); timer = setTimeout(tick, dur(items[cur - 1])); } else tick(); };
+  const stop = () => { playing = false; clearTimeout(timer); bar.classList.remove('playing'); btn.innerHTML = PLAY; btn.setAttribute('aria-label', 'Play walkthrough'); };
+  const go = n => { stop(); show(Math.max(1, Math.min(N, n))); };
+
+  btn.addEventListener('click', () => playing ? stop() : play());
+  bar.querySelectorAll('.pl-nav').forEach(b => b.addEventListener('click', () => go((cur || (b.dataset.d > 0 ? 0 : 2)) + +b.dataset.d)));
+  segs.forEach((s, i) => s.addEventListener('click', () => go(i + 1)));
+  bar.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); go(cur + 1); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); go(cur - 1); }
+  });
+
+  /* ---- hover / tap on the reading guide and the visual ---- */
+  items.forEach((li, i) => {
+    li.tabIndex = 0;
+    li.addEventListener('mouseenter', () => set(i + 1));
+    li.addEventListener('mouseleave', () => set(pinned));
+    li.addEventListener('focus', () => set(i + 1));
+    li.addEventListener('blur', () => set(pinned));
+    li.addEventListener('click', () => { if (pinned === i + 1) { stop(); show(0); } else go(i + 1); });
+  });
+  svg.querySelectorAll('[data-step]').forEach(el => {
+    el.addEventListener('mouseenter', () => set(+el.dataset.step.split(' ')[0]));
+    el.addEventListener('mouseleave', () => set(pinned));
+  });
+})();
+</script>
+<script>
+/* ===== X-ray scanner script =====
+   Wires up the two layers the content markup already contains (nothing is drawn from data):
+   - <g class="xr-outside"> = what you normally see, <g class="xr-inside"> = the hidden parts, in the same SVG coordinates;
+   - builds a toolbar (Outside / X-ray / Both, a Scanner slider, a Lens toggle), a draggable vertical scanner in the SVG,
+     and an optional round lens that follows the pointer; the inside layer is clipped to the scanned area (SVG clipPath)
+     and the outside layer is dimmed there (SVG mask);
+   - .xr-label groups (cards + leader lines) fade in when the scanner has passed their part (data-focus-x = the part's right edge);
+   - the walkthrough player of the base page (ol.steps) moves the scanner to the part of the step being shown;
+   - keyboard: the scanner handle and the slider both take Left / Right (Shift = bigger steps), Home / End;
+   - <figure class="stage xr-stage" data-style="handwritten"> turns on the notebook look and loads the two handwriting fonts.
+   Exposes window.__xr (setMode, setScan, state) and window.__xrReady / __xrErrors for the validator. No dependencies. */
+(() => {
+  const errors = window.__xrErrors = [];
+  const root = document.documentElement, stage = document.querySelector('.stage');
+  const hand = !!stage && /hand/i.test(stage.dataset.style || '');
+  if (hand) root.classList.add('hand');
+  /* look: 'scan' (default, monochrome cyan/white radiograph) or 'color' (explainer colours); handwritten pages use 'color' */
+  const look = hand || (stage && stage.dataset.look === 'color') ? 'color' : 'scan';
+  if (stage) stage.dataset.look = look;
+  if (look === 'scan') root.classList.add('look-scan');
+  /* tone: 'cyan' (default) or 'film' (neutral white/grey; the default when a photo is attached) */
+  const hasPhoto = !!document.querySelector('.xr-photo-xray');
+  const tone = (stage && stage.dataset.tone === 'film') || (hasPhoto && !(stage && stage.dataset.tone === 'cyan')) ? 'film' : 'cyan';
+  if (stage) { stage.dataset.tone = tone; if (hasPhoto) stage.dataset.photo = ''; }
+  if (look === 'scan' && tone === 'film') root.classList.add('tone-film');
+  const fontsReady = !hand ? Promise.resolve() : new Promise(res => {
+    const l = document.createElement('link'); l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap';
+    l.onload = () => Promise.all(['400 16px Kalam', '700 16px Kalam', '700 32px Caveat'].map(f => document.fonts.load(f))).catch(() => {}).then(res);
+    l.onerror = res; document.head.appendChild(l);
+    setTimeout(res, 2500);                      // offline: carry on with the fallback font
+  });
+  window.__xrReady = fontsReady;
+
+  const svg = document.querySelector('.stage > svg');
+  const outside = svg && svg.querySelector('.xr-outside'), inside = svg && svg.querySelector('.xr-inside');
+  if (!svg || !outside || !inside) { errors.push('missing .xr-outside or .xr-inside layer'); return; }
+  const NS = 'http://www.w3.org/2000/svg', vb = svg.viewBox.baseVal;
+  const X0 = vb.x, Y0 = vb.y, W = vb.width, H = vb.height;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+
+  /* ---- state ---- */
+  let mode = 'both', scan = X0 + W * (parseFloat(svg.dataset.scan) || 0.5), lensOn = false, lens = null, tween = 0;
+  if (svg.dataset.photoStrength) svg.style.setProperty('--xr-photo-strength', svg.dataset.photoStrength);
+  const R = parseFloat(svg.dataset.lens) || Math.round(W * 0.09);
+
+  /* ---- clip + mask (inside revealed, outside dimmed, in the scanned area) ---- */
+  let defs = svg.querySelector('defs'); if (!defs) defs = svg.insertBefore(mk('defs', {}), svg.firstChild);
+  const clip = mk('clipPath', { id: 'xr-clip', clipPathUnits: 'userSpaceOnUse' }, defs);
+  const clipRect = mk('rect', { id: 'xr-clip-rect', x: X0, y: Y0 - 40, width: 0, height: H + 80 }, clip);
+  const clipLens = mk('circle', { id: 'xr-clip-lens', cx: 0, cy: 0, r: 0 }, clip);
+  const mask = mk('mask', { id: 'xr-mask', maskUnits: 'userSpaceOnUse', x: X0 - 40, y: Y0 - 40, width: W + 80, height: H + 80 }, defs);
+  mk('rect', { x: X0 - 40, y: Y0 - 40, width: W + 80, height: H + 80, fill: '#fff' }, mask);
+  const maskG = mk('g', { fill: '#000', 'fill-opacity': '.72' }, mask);
+  const maskRect = mk('rect', { x: X0, y: Y0 - 40, width: 0, height: H + 80 }, maskG);
+  const maskLens = mk('circle', { cx: 0, cy: 0, r: 0 }, maskG);
+  svg.classList.add('xr-live');
+
+  /* ---- scanner bar (line + beam + handle), drawn on top ---- */
+  const bar = mk('g', { class: 'xr-scanbar', tabindex: '0', role: 'slider', 'aria-label': 'X-ray scanner position',
+    'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': '50' }, svg);
+  mk('rect', { class: 'xr-beam', x: -90, y: Y0, width: 90, height: H, fill: 'url(#xr-beam)' }, bar);
+  mk('line', { class: 'xr-scanline', x1: 0, x2: 0, y1: Y0, y2: Y0 + H }, bar);
+  mk('rect', { class: 'xr-hit', x: -16, y: Y0, width: 32, height: H }, bar);
+  const gy = Y0 + H - 24, grip = mk('g', { class: 'xr-grip', transform: 'translate(0,' + gy + ')' }, bar);
+  mk('rect', { x: -17, y: -20, width: 34, height: 40, rx: 12 }, grip);
+  mk('path', { d: 'M-6 -7 L-11 0 L-6 7 M6 -7 L11 0 L6 7' }, grip);
+
+  /* ---- lens ---- */
+  lens = mk('g', { class: 'xr-lens off' }, svg);
+  mk('circle', { class: 'xr-lens-ring', cx: 0, cy: 0, r: R }, lens);
+  let lx = X0 + W / 2, ly = Y0 + H / 2, lensHas = false;
+
+  /* ---- toolbar ---- */
+  const tb = document.createElement('div'); tb.className = 'xr-bar'; tb.setAttribute('role', 'group'); tb.setAttribute('aria-label', 'X-ray controls');
+  tb.innerHTML = '<div class="xr-seg" role="group" aria-label="View">' +
+    '<button type="button" data-mode="outside" aria-pressed="false">Outside</button>' +
+    '<button type="button" data-mode="xray" aria-pressed="false">X-ray</button>' +
+    '<button type="button" data-mode="both" aria-pressed="true">Both</button></div>' +
+    '<label class="xr-slide"><span>Scanner</span><input type="range" min="0" max="100" step="1" value="50" aria-label="Scanner position (arrow keys move it)"></label>' +
+    '<button class="xr-lensbtn" type="button" aria-pressed="false" title="A round lens that follows your pointer">Lens</button>';
+  svg.before(tb);
+  const range = tb.querySelector('input'), lensBtn = tb.querySelector('.xr-lensbtn'), modeBtns = [...tb.querySelectorAll('[data-mode]')];
+
+  /* ---- labels: fade in once the scanner has passed their part ---- */
+  const labels = [...svg.querySelectorAll('.xr-label')];
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const render = () => {
+    const s = clamp(scan, X0, X0 + W);
+    const w = mode === 'xray' ? W + 80 : mode === 'both' ? s - X0 : 0;
+    clipRect.setAttribute('width', w); maskRect.setAttribute('width', w);
+    const lr = lensOn && lensHas ? R : 0;
+    for (const c of [clipLens, maskLens]) { c.setAttribute('cx', lx); c.setAttribute('cy', ly); c.setAttribute('r', lr); }
+    lens.classList.toggle('off', !(lensOn && lensHas)); lens.setAttribute('transform', 'translate(' + lx + ',' + ly + ')');
+    bar.setAttribute('transform', 'translate(' + s + ',0)');
+    const pct = Math.round((s - X0) / W * 100);
+    bar.setAttribute('aria-valuenow', pct); bar.setAttribute('aria-valuetext', pct + '% scanned');
+    range.value = pct;
+    svg.dataset.mode = mode; svg.classList.toggle('xr-lens-on', lensOn);
+    tb.classList.toggle('is-xray', mode === 'xray'); tb.classList.toggle('is-outside', mode === 'outside');
+    modeBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+    lensBtn.setAttribute('aria-pressed', String(lensOn));
+    for (const l of labels) {
+      const fx = l.dataset.focusX === undefined ? -1e9 : +l.dataset.focusX;
+      const seen = mode === 'xray' || (mode === 'both' && s >= fx - 4);
+      l.classList.toggle('off', !seen);
+    }
+  };
+  const setScan = (x, smooth) => {
+    cancelAnimationFrame(tween);
+    x = clamp(x, X0, X0 + W);
+    if (!smooth || reduce) { scan = x; render(); return; }
+    const from = scan, t0 = performance.now(), d = 450;
+    const step = now => { const k = clamp((now - t0) / d, 0, 1), e = 1 - Math.pow(1 - k, 3); scan = from + (x - from) * e; render(); if (k < 1) tween = requestAnimationFrame(step); };
+    tween = requestAnimationFrame(step);
+  };
+  const setMode = m => { mode = m; render(); };
+
+  /* ---- pointer: drag the scanner ---- */
+  const toSvgX = e => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+  let drag = false;
+  bar.addEventListener('pointerdown', e => { drag = true; bar.setPointerCapture(e.pointerId); bar.focus({ preventScroll: true }); setScan(toSvgX(e).x); e.preventDefault(); });
+  bar.addEventListener('pointermove', e => { if (drag) setScan(toSvgX(e).x); });
+  const end = () => { drag = false; };
+  bar.addEventListener('pointerup', end); bar.addEventListener('pointercancel', end);
+  bar.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+  bar.addEventListener('keydown', e => {
+    const big = e.shiftKey ? 10 : 2, u = W / 100;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') setScan(scan + big * u);
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') setScan(scan - big * u);
+    else if (e.key === 'Home') setScan(X0); else if (e.key === 'End') setScan(X0 + W);
+    else return;
+    e.preventDefault();
+  });
+  /* ---- pointer: the lens ---- */
+  svg.addEventListener('pointermove', e => {
+    if (!lensOn || drag) return;
+    const p = toSvgX(e); lx = p.x; ly = p.y; lensHas = true; render();
+  });
+  svg.addEventListener('pointerdown', e => { if (lensOn && e.pointerType === 'touch') { const p = toSvgX(e); lx = p.x; ly = p.y; lensHas = true; render(); } });
+  svg.addEventListener('pointerleave', e => { if (lensOn && e.pointerType !== 'touch') { lensHas = false; render(); } });
+
+  /* ---- toolbar events ---- */
+  modeBtns.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  range.addEventListener('input', () => { if (mode !== 'both') mode = 'both'; setScan(X0 + W * range.value / 100); });
+  lensBtn.addEventListener('click', () => {
+    lensOn = !lensOn; if (lensOn) { lensHas = true; lx = Math.min(lx, X0 + W); }
+    render();
+  });
+  tb.addEventListener('keydown', e => { if (e.key === 'Escape' && lensOn) { lensOn = false; render(); } });
+
+  /* ---- the walkthrough: move the scanner to the part of the step shown ---- */
+  const stepsEl = document.querySelector('ol.steps');
+  const rightEdge = n => {                 // right edge (in SVG units) of everything the step shows in the inside layer
+    let m = -1e9;
+    inside.querySelectorAll('[data-step]').forEach(el => {
+      if (!el.dataset.step.split(' ').includes(String(n))) return;
+      if (el.dataset.focusX !== undefined) { m = Math.max(m, +el.dataset.focusX); return; }
+      try { const b = el.getBBox(); m = Math.max(m, b.x + b.width + 14); } catch (e) {}
+    });
+    svg.querySelectorAll('.xr-label[data-focus-x]').forEach(l => {
+      if (l.querySelector('[data-step]') && l.querySelector('[data-step]').dataset.step.split(' ').includes(String(n))) m = Math.max(m, +l.dataset.focusX + 10);
+    });
+    return m;
+  };
+  let lastStep = 0;
+  if (stepsEl) new MutationObserver(() => {
+    const li = stepsEl.querySelector('li.on'); const n = li ? [...stepsEl.children].indexOf(li) + 1 : 0;
+    if (!n || n === lastStep) { if (!n) lastStep = 0; return; }
+    lastStep = n;
+    const x = rightEdge(n); if (x < -1e8) return;
+    if (mode === 'outside') mode = 'both';
+    if (mode === 'both') setScan(Math.max(x, X0), true); else render();
+  }).observe(stepsEl, { attributes: true, attributeFilter: ['class'], subtree: true });
+
+  window.__xr = {
+    setMode, setScan: f => setScan(X0 + W * f), setLens: on => { lensOn = !!on; lensHas = lensOn; render(); },
+    state: () => ({ look, tone, mode, scan: (scan - X0) / W, lens: lensOn, clipWidth: +clipRect.getAttribute('width'),
+      labelsOn: labels.filter(l => !l.classList.contains('off')).length, labels: labels.length })
+  };
+  render();
+})();
+</script>
+</body>
+</html>

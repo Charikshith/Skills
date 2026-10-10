@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Desk lamp blueprint</title>
+<script>
+/* Theme: opens in Deep dark; the ☀/☾ button switches to light and remembers it (the device's dark mode is ignored). */
+(function () {
+  var d = document.documentElement;
+  try { var t = localStorage.getItem('vs-theme'); if (t === 'light' || t === 'dark') d.setAttribute('data-theme', t); } catch (e) {}
+  document.addEventListener('DOMContentLoaded', function () {
+    var b = document.querySelector('.theme-toggle'); if (!b) return;
+    var sync = function () {
+      var light = d.getAttribute('data-theme') === 'light';
+      b.textContent = light ? '☾' : '☀';
+      b.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+      b.title = light ? 'Dark theme' : 'Light theme';
+    };
+    sync();
+    b.addEventListener('click', function () {
+      var next = d.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      d.setAttribute('data-theme', next);
+      try { localStorage.setItem('vs-theme', next); } catch (e) {}
+      sync();
+    });
+  });
+})();
+</script>
+<style>
+/* ===== Tokens — default theme: Deep dark. Colours carry meaning: c1..c5 are the only accent families ===== */
+:root{
+  --bg:#0f1013; --surface:#1a1b20; --ink:#ededf1; --muted:#a4a6b0; --line:#34363e; --zone:#202228;
+  --c1:#7aa7ff; --c1-soft:#1b2846;   /* blue   */
+  --c2:#40d0a0; --c2-soft:#13332a;   /* green  */
+  --c3:#f4a94e; --c3-soft:#3a2912;   /* amber  */
+  --c4:#f472a8; --c4-soft:#3d1729;   /* rose   */
+  --c5:#ab8dff; --c5-soft:#291f47;   /* violet */
+  --on-accent:#0f1013;
+  --shadow:rgba(0,0,0,.55); --mass:#555b69; --mass-shade:#383c46;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;
+  --r:18px;
+  color-scheme:dark;
+}
+/* ===== Light theme (Warm paper) — via the ☀ button ===== */
+:root[data-theme="light"]{
+  --bg:#f4f2ec; --surface:#ffffff; --ink:#18181b; --muted:#5b5e66; --line:#d9d5cb; --zone:#ece9e1;
+  --c1:#2563eb; --c1-soft:#dce7fe; --c2:#0b8a64; --c2-soft:#d2f0e4; --c3:#c76a00; --c3-soft:#fde8cc;
+  --c4:#c8246b; --c4-soft:#fcdfea; --c5:#6c3fd8; --c5-soft:#e9e1fd; --on-accent:#ffffff;
+  --shadow:rgba(30,25,15,.16); --mass:#ffffff; --mass-shade:#d6d2c8;
+  color-scheme:light;
+}
+.theme-toggle{position:fixed;top:14px;right:14px;z-index:20;width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:19px;line-height:1;cursor:pointer;
+  box-shadow:0 6px 16px -8px var(--shadow);transition:transform .15s}
+.theme-toggle:hover{transform:scale(1.07)}
+.theme-toggle:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+.hand .theme-toggle{display:none}   /* handwritten style is always paper */
+@media print{.theme-toggle{display:none}}
+
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--font);-webkit-font-smoothing:antialiased}
+body::before{ /* soft colour glow behind the header */
+  content:"";position:fixed;inset:0 0 auto 0;height:520px;z-index:-1;pointer-events:none;
+  background:radial-gradient(60% 80% at 15% 0%,var(--c1-soft),transparent 70%),
+             radial-gradient(50% 70% at 90% 10%,var(--c5-soft),transparent 70%);
+  opacity:.9}
+.page{max-width:1040px;margin:0 auto;padding:44px 24px 56px}
+@media (max-width:600px){.page{padding:24px 16px 40px}}
+
+/* ===== Header ===== */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;padding:6px 12px 6px 10px;border-radius:999px;
+  background:var(--surface);border:1px solid var(--line);font:600 12px/1 var(--font);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c1);box-shadow:0 0 0 3px var(--c1-soft)}
+h1{font-size:clamp(30px,5vw,48px);line-height:1.08;letter-spacing:-.025em;margin:0 0 12px;font-weight:800}
+h1 .accent{background:linear-gradient(90deg,var(--c1),var(--c5));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:18px;color:var(--muted);max-width:66ch;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;padding:0;list-style:none}
+.chips li{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px;color:var(--muted)}
+.chips b{color:var(--ink);font-weight:700}
+h2{font-size:20px;letter-spacing:-.01em;margin:44px 0 14px;display:flex;align-items:center;gap:10px}
+h2::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ===== Main visual ===== */
+.stage{position:relative;margin:28px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;overflow-x:auto;box-shadow:0 1px 2px var(--shadow),0 18px 40px -24px var(--shadow)}
+.stage::before{ /* faint dot grid */
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.55;
+  background:radial-gradient(circle,var(--line) 1px,transparent 1.4px) 0 0/22px 22px}
+.stage > svg{position:relative;display:block;width:100%;height:auto;overflow:visible}
+.stage figcaption{position:relative;font-size:14px;color:var(--muted);margin-top:12px}
+@media (max-width:600px){.stage{padding:12px}.stage > svg{min-width:640px}.stage figcaption{position:sticky;left:0}}
+.scroll-hint{display:none;font-size:13px;color:var(--muted);margin:8px 0 0}
+@media (max-width:600px){.scroll-hint{display:block}}
+
+/* --- SVG vocabulary: use these classes, never hard-coded colours --- */
+.node{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.node.c1{fill:url(#g-c1);stroke:var(--c1)} .node.c2{fill:url(#g-c2);stroke:var(--c2)}
+.node.c3{fill:url(#g-c3);stroke:var(--c3)} .node.c4{fill:url(#g-c4);stroke:var(--c4)}
+.node.c5{fill:url(#g-c5);stroke:var(--c5)}
+.node.solid.c1{fill:var(--c1)} .node.solid.c2{fill:var(--c2)} .node.solid.c3{fill:var(--c3)}
+.node.solid.c4{fill:var(--c4)} .node.solid.c5{fill:var(--c5)}
+.lift{filter:url(#shadow)}                          /* soft drop shadow: put on a <g> or shape */
+.chip{stroke:none} .chip.c1{fill:var(--c1)} .chip.c2{fill:var(--c2)} .chip.c3{fill:var(--c3)} .chip.c4{fill:var(--c4)} .chip.c5{fill:var(--c5)}
+.ico{color:var(--ink)} .ico.on{color:var(--on-accent)}
+.ico.c1{color:var(--c1)} .ico.c2{color:var(--c2)} .ico.c3{color:var(--c3)} .ico.c4{color:var(--c4)} .ico.c5{color:var(--c5)} .ico.muted{color:var(--muted)}
+.zone{fill:var(--zone);stroke:var(--line);stroke-width:1;stroke-dasharray:5 5;fill-opacity:.7}
+/* scene shapes (sky, ground, sea, body outline …): soft fills that fade */
+.wash{stroke:none} .wash.c1{fill:url(#fade-c1)} .wash.c2{fill:url(#fade-c2)} .wash.c3{fill:url(#fade-c3)}
+.wash.c4{fill:url(#fade-c4)} .wash.c5{fill:url(#fade-c5)} .wash.up.c1{fill:url(#rise-c1)} .wash.up.c2{fill:url(#rise-c2)}
+.wash.up.c3{fill:url(#rise-c3)} .wash.up.c4{fill:url(#rise-c4)} .wash.up.c5{fill:url(#rise-c5)}
+.wash.line{stroke-width:2} .wash.line.c1{stroke:var(--c1)} .wash.line.c2{stroke:var(--c2)} .wash.line.c3{stroke:var(--c3)}
+.mass{fill:var(--mass);stroke:none} .mass.shade{fill:var(--mass-shade)}   /* solid soft blobs: clouds, organs, objects */
+.edge{fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.edge.c1{stroke:var(--c1)} .edge.c2{stroke:var(--c2)} .edge.c3{stroke:var(--c3)} .edge.c4{stroke:var(--c4)} .edge.c5{stroke:var(--c5)}
+.edge.dash{stroke-dasharray:6 7}
+.edge.thick{stroke-width:3.5}
+.edge.flow{stroke-dasharray:7 9;animation:march 1.1s linear infinite}   /* marching dashes = something is moving */
+@keyframes march{to{stroke-dashoffset:-16}}
+.particle{stroke:var(--surface);stroke-width:1.5} .particle.c1{fill:var(--c1)} .particle.c2{fill:var(--c2)}
+.particle.c3{fill:var(--c3)} .particle.c4{fill:var(--c4)} .particle.c5{fill:var(--c5)}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 24s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.leader{fill:none;stroke:var(--muted);stroke-width:1.2}
+.dot{fill:var(--muted)}
+.t{font:600 16px var(--font);fill:var(--ink)}
+.t.sub{font-weight:400;font-size:14px;fill:var(--muted)}
+.t.big{font-size:20px;font-weight:800}
+.t.small{font-size:13px;font-weight:600;fill:var(--muted)}
+.t.on{fill:var(--on-accent)}
+.t.c1{fill:var(--c1)} .t.c2{fill:var(--c2)} .t.c3{fill:var(--c3)} .t.c4{fill:var(--c4)} .t.c5{fill:var(--c5)}
+.t.mono{font-family:var(--mono)}
+.t.halo{paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}  /* readable over scenes/lines */
+.badge circle{fill:var(--ink);stroke:var(--surface);stroke-width:2.5} .badge text{font:800 13px var(--font);fill:var(--surface)}
+.badge.c1 circle{fill:var(--c1)} .badge.c2 circle{fill:var(--c2)} .badge.c3 circle{fill:var(--c3)}
+.badge.c4 circle{fill:var(--c4)} .badge.c5 circle{fill:var(--c5)}
+/* step focus (wired up by the script at the bottom) */
+[data-step]{transition:opacity .25s}
+svg.focusing [data-step]:not(.on){opacity:.18}
+@media (prefers-reduced-motion:reduce){.edge.flow,.spin,.pulse{animation:none}.particle{display:none}}
+
+/* ===== Walkthrough player (inserted by the script; no markup needed) ===== */
+.player{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-top:14px;padding:10px 14px 10px 10px;
+  border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+@media (max-width:600px){.player{position:sticky;left:0}}
+.player button{font:inherit;cursor:pointer}
+.player button:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+.pl-play{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:var(--ink);color:var(--surface);display:grid;place-items:center;
+  box-shadow:0 6px 16px -8px var(--shadow);transition:transform .15s}
+.pl-play:hover{transform:scale(1.06)}
+.pl-play svg{margin-left:2px} .player.playing .pl-play svg{margin-left:0}
+.pl-nav{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0;display:grid;place-items:center}
+.pl-track{display:flex;gap:4px;flex:none}
+.pl-seg{width:34px;height:20px;padding:0;border:0;background:none;color:var(--ink)}
+.pl-seg.c1{color:var(--c1)} .pl-seg.c2{color:var(--c2)} .pl-seg.c3{color:var(--c3)} .pl-seg.c4{color:var(--c4)} .pl-seg.c5{color:var(--c5)}
+.pl-seg i{display:block;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.pl-seg s{display:block;height:100%;width:0;background:currentColor;text-decoration:none}
+.pl-seg.done s,.pl-seg.active s{width:100%}
+.player.playing .pl-seg.active s{animation:pl-fill var(--dur,4s) linear}
+@keyframes pl-fill{from{width:0}to{width:100%}}
+.pl-cap{flex:1 1 300px;margin:0;font-size:15px;line-height:1.45;color:var(--muted);min-height:44px;display:flex;flex-wrap:wrap;align-items:center;gap:0 6px}
+.pl-cap b{color:var(--ink)}
+.pl-n{font:700 12px/1 var(--font);letter-spacing:.06em;text-transform:uppercase;color:var(--surface);background:var(--muted);padding:4px 7px;border-radius:999px}
+@media print{.player{display:none}}
+
+/* ===== Reading guide: numbered steps that match the badges ===== */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:12px;counter-reset:s}
+.steps li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 16px 54px;position:relative;
+  cursor:default;transition:transform .2s,box-shadow .2s,border-color .2s;outline:none}
+.steps li::before{content:counter(s);position:absolute;left:14px;top:15px;width:26px;height:26px;border-radius:50%;
+  background:var(--ink);color:var(--surface);font:800 13px/26px var(--font);text-align:center}
+.steps li.c1::before{background:var(--c1)} .steps li.c2::before{background:var(--c2)} .steps li.c3::before{background:var(--c3)}
+.steps li.c4::before{background:var(--c4)} .steps li.c5::before{background:var(--c5)}
+.steps li.on,.steps li:hover,.steps li:focus-visible{transform:translateY(-2px);border-color:var(--muted);box-shadow:0 10px 24px -14px var(--shadow)}
+.steps b{display:block;margin-bottom:2px}
+.steps span{color:var(--muted);font-size:15px}
+
+/* ===== Takeaways ===== */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.card{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 16px 60px}
+.card::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--c1)}
+.card svg{position:absolute;left:18px;top:17px;width:26px;height:26px;color:var(--c1)}
+.card.c2::before{background:var(--c2)} .card.c3::before{background:var(--c3)} .card.c4::before{background:var(--c4)} .card.c5::before{background:var(--c5)}
+.card.c2 svg{color:var(--c2)} .card.c3 svg{color:var(--c3)} .card.c4 svg{color:var(--c4)} .card.c5 svg{color:var(--c5)}
+.card b{display:block;margin-bottom:2px}
+.card p{margin:0;color:var(--muted)}
+
+/* ===== Legend ===== */
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin:14px 0 0;padding:0;list-style:none;font-size:14px;color:var(--muted)}
+.legend li{display:flex;align-items:center;gap:8px}
+.sw{width:14px;height:14px;border-radius:4px;border:1.5px solid var(--line);background:var(--surface)}
+.sw.c1{background:var(--c1-soft);border-color:var(--c1)} .sw.c2{background:var(--c2-soft);border-color:var(--c2)}
+.sw.c3{background:var(--c3-soft);border-color:var(--c3)} .sw.c4{background:var(--c4-soft);border-color:var(--c4)}
+.sw.c5{background:var(--c5-soft);border-color:var(--c5)}
+.sw.line{height:3px;border:0;border-radius:2px;background:var(--muted)}
+.sw.line.c1{background:var(--c1)} .sw.line.c2{background:var(--c2)} .sw.line.c3{background:var(--c3)}
+.sw.line.c4{background:var(--c4)} .sw.line.c5{background:var(--c5)}
+
+/* ===== Footnote ===== */
+.note{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+code{font-family:var(--mono);font-size:.92em;background:var(--zone);padding:1px 5px;border-radius:5px}
+
+@media print{body{background:#fff}body::before{display:none}.stage,.steps li,.card{break-inside:avoid;box-shadow:none}}
+
+/* ===== Blueprint theme: dark = Blueprint (deep blue paper, white/cyan lines), light = Whiteprint (white paper, dark-blue lines) ===== */
+:root{
+  --bg:#06172e; --surface:#0a2a52; --ink:#eaf4ff; --muted:#9dbddf; --line:#27578f; --zone:#0c3566;
+  --c1:#7fd8ff; --c1-soft:#0e3a6e;
+  --c2:#6fe3b8; --c2-soft:#0f3b45;
+  --c3:#ffc766; --c3-soft:#3b3a3c;
+  --c4:#ff8fb4; --c4-soft:#3c2f5a;
+  --c5:#b7a4ff; --c5-soft:#26307a;
+  --on-accent:#06172e; --shadow:rgba(0,10,30,.6);
+  --bp-paper:#0d4082; --bp-grid-minor:rgba(190,225,255,.11); --bp-grid-major:rgba(190,225,255,.26);
+  --bp-ink:#f1f8ff; --bp-ink2:#bcd9f5; --bp-dim:#8fdcff; --bp-face:rgba(255,255,255,.045); --bp-hatch:rgba(230,243,255,.62);
+  --bp-body:#13509a; --bp-hl:#ffd36b; --bp-hl-soft:rgba(255,211,107,.22); --bp-on-hl:#06172e; --bp-frame:#d6ebff;
+}
+:root[data-theme="light"]{
+  --bg:#e7ecf3; --surface:#ffffff; --ink:#0e2247; --muted:#4a5f82; --line:#c3d0e3; --zone:#eef3f9;
+  --c1:#0b66b3; --c1-soft:#d9ebfa; --c2:#0b8a64; --c2-soft:#d2f0e4; --c3:#b45f00; --c3-soft:#fde8cc;
+  --c4:#c0225e; --c4-soft:#fcdfea; --c5:#5a3fd0; --c5-soft:#e6e0fb; --on-accent:#ffffff; --shadow:rgba(20,40,80,.16);
+  --bp-paper:#fcfdff; --bp-grid-minor:rgba(30,90,160,.10); --bp-grid-major:rgba(30,90,160,.22);
+  --bp-ink:#0f2d63; --bp-ink2:#3d5a8f; --bp-dim:#0b6ab0; --bp-face:rgba(15,45,99,.04); --bp-hatch:rgba(15,45,99,.6);
+  --bp-body:#eef3fa; --bp-hl:#d9480f; --bp-hl-soft:rgba(217,72,15,.14); --bp-on-hl:#ffffff; --bp-frame:#0f2d63;
+}
+.eyebrow::before{background:var(--bp-dim);box-shadow:0 0 0 3px var(--c1-soft)}
+
+/* ===== Toolbar ===== */
+.bp-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:22px 0 0}
+.bp-bar-lbl{font:600 12px/1 var(--font);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.bp-btn{font:600 14px/1 var(--font);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:9px 14px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;transition:border-color .15s,background .15s}
+.bp-btn::before{content:"";width:9px;height:9px;border-radius:2px;border:1.5px solid var(--muted);background:transparent}
+.bp-btn[aria-pressed="true"]::before{background:var(--bp-dim);border-color:var(--bp-dim)}
+.bp-btn.plain::before{display:none}
+.bp-btn:hover{border-color:var(--muted)}
+.bp-btn:focus-visible{outline:2px solid var(--c1);outline-offset:2px}
+.bp-btn[aria-pressed="true"]{background:var(--zone)}
+
+/* ===== The drawing sheet ===== */
+.stage.bp-stage{padding:0;background:var(--bp-paper);margin-top:14px;overflow-x:auto;overflow-y:hidden}
+.stage.bp-stage::before{display:none}
+.stage.bp-stage > svg{min-height:0}
+.stage.bp-stage .player{margin:12px;background:var(--surface)}
+.stage.bp-stage figcaption{padding:0 16px 14px;margin-top:0}
+@media (max-width:600px){.stage.bp-stage > svg{min-width:860px}.stage.bp-stage .player{margin:10px 8px}.stage.bp-stage figcaption{padding:0 12px 12px}}
+.bp-paper{fill:var(--bp-paper)} .bp-gridrect{fill:url(#bp-gridpat)}
+.bp-frame{fill:none;stroke:var(--bp-frame);stroke-width:2.2} .bp-frame.thin{stroke-width:.9}
+.bp-zone{stroke:var(--bp-frame);stroke-width:.9}
+.bp-zt{font:600 9.5px var(--font);fill:var(--bp-frame);text-anchor:middle}
+.bp-gm{stroke:var(--bp-grid-minor);stroke-width:.6;fill:none} .bp-gM{stroke:var(--bp-grid-major);stroke-width:.8;fill:none}
+
+/* line types */
+.bp-outline,.bp-detail,.bp-hidden,.bp-center,.bp-cut,.bp-thin{fill:none;stroke:var(--bp-ink);stroke-linejoin:round;stroke-linecap:round}
+.bp-outline{stroke-width:2.3}
+.bp-detail{stroke-width:1.15}
+.bp-thin{stroke-width:.7}
+.bp-hidden{stroke-width:1.1;stroke:var(--bp-ink2);stroke-dasharray:7 4.5;stroke-linecap:butt}
+.bp-center{stroke-width:.9;stroke:var(--bp-ink2);stroke-dasharray:18 3.5 2.5 3.5;stroke-linecap:butt}
+.bp-cut{stroke-width:2.4;stroke-dasharray:14 3 3 3;stroke-linecap:butt}
+.bp-solid{fill:var(--bp-ink);stroke:var(--bp-ink);stroke-width:1;stroke-linejoin:round}
+.bp-face{fill:var(--bp-face)}
+.bp-body{fill:var(--bp-body)}
+.bp-paperfill{fill:var(--bp-paper);stroke:none}
+.bp-hole{fill:none;stroke:var(--bp-paper);stroke-width:2.6;stroke-linecap:round}
+.bp-hatch,.bp-hatch2,.bp-hatchf,.bp-cross,.bp-dots{stroke:none}
+.bp-hatch{fill:url(#bp-hatch)} .bp-hatch2{fill:url(#bp-hatch2)} .bp-hatchf{fill:url(#bp-hatchf)} .bp-cross{fill:url(#bp-cross)} .bp-dots{fill:url(#bp-dots)}
+.bp-hp{stroke:var(--bp-hatch);stroke-width:1;fill:none} .bp-hp.f{stroke-width:.8} .bp-hd{fill:var(--bp-hatch);stroke:none}
+
+/* text */
+.bp-t{font:500 12px var(--mono);fill:var(--bp-ink);letter-spacing:.02em}
+.bp-t.sm{font-size:10px} .bp-t.lg{font:700 15px var(--font);letter-spacing:.04em}
+.bp-t.cap{font-family:var(--font);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:11px}
+.bp-t.dim{fill:var(--bp-dim)} .bp-t.mute{fill:var(--bp-ink2)}
+.bp-t.halo{paint-order:stroke;stroke:var(--bp-paper);stroke-width:4.5px;stroke-linejoin:round}
+
+/* dimensions */
+.bp-dl,.bp-dx,.bp-dk{fill:none;stroke:var(--bp-dim);stroke-width:.95}
+.bp-dx{stroke-width:.8} .bp-dk{stroke-width:1.6;stroke-linecap:round}
+.bp-da{fill:var(--bp-dim);stroke:none}
+.bp-dt{font:600 12px var(--mono);fill:var(--bp-dim);text-anchor:middle;paint-order:stroke;stroke:var(--bp-paper);stroke-width:5px;stroke-linejoin:round}
+.bp-nodim .bp-dim{display:none} .bp-nohid .bp-hidden{display:none} .bp-nogrid .bp-gridrect{display:none}
+
+/* balloons */
+.bp-balloon{cursor:pointer;outline:none}
+.bp-bc{fill:var(--bp-paper);stroke:var(--bp-ink);stroke-width:1.7}
+.bp-bt{font:700 12.5px var(--font);fill:var(--bp-ink);text-anchor:middle}
+.bp-leader{fill:none;stroke:var(--bp-ink);stroke-width:1.05} .bp-ldot{fill:var(--bp-ink);stroke:none}
+.bp-balloon.hl .bp-bc,.bp-balloon.on .bp-bc{fill:var(--bp-hl);stroke:var(--bp-hl)}
+.bp-balloon.hl .bp-bt,.bp-balloon.on .bp-bt{fill:var(--bp-on-hl)}
+.bp-balloon.hl .bp-leader,.bp-balloon.on .bp-leader{stroke:var(--bp-hl);stroke-width:1.6} .bp-balloon.hl .bp-ldot,.bp-balloon.on .bp-ldot{fill:var(--bp-hl)}
+.bp-balloon:focus-visible .bp-bc{stroke:var(--bp-hl);stroke-width:3}
+.bp-part{cursor:pointer;outline:none}
+.bp-part.hl .bp-outline,.bp-part.hl .bp-detail,.bp-part.hl .bp-hidden,.bp-part.hl .bp-center,.bp-part.hl .bp-thin,
+.bp-part.on .bp-outline,.bp-part.on .bp-detail,.bp-part.on .bp-hidden,.bp-part.on .bp-center,.bp-part.on .bp-thin{stroke:var(--bp-hl)}
+.bp-part.hl .bp-t,.bp-part.on .bp-t{fill:var(--bp-hl)}
+.bp-part.hl .bp-solid,.bp-part.on .bp-solid{fill:var(--bp-hl);stroke:var(--bp-hl)}
+.bp-part.hl .bp-face,.bp-part.on .bp-face{fill:var(--bp-hl-soft)}
+.bp-part.hl .bp-body,.bp-part.on .bp-body{fill:var(--bp-hl-soft)}
+.bp-part.hl .bp-body,.bp-part.on .bp-body{fill:color-mix(in srgb,var(--bp-hl) 30%,var(--bp-paper))}
+.bp-part.hl .bp-outline,.bp-part.on .bp-outline{stroke-width:2.9}
+svg.bp-focus .bp-part:not(.hl),svg.bp-focus .bp-balloon:not(.hl){opacity:.4}
+
+/* title block, notes, view labels, symbols */
+.bp-tb-line{stroke:var(--bp-frame);stroke-width:1;fill:none} .bp-tb-box{fill:var(--bp-paper);stroke:var(--bp-frame);stroke-width:2.2}
+.bp-tb-l{font:700 8.5px var(--font);letter-spacing:.1em;text-transform:uppercase;fill:var(--bp-ink2)}
+.bp-tb-v{font:700 12.5px var(--mono);fill:var(--bp-ink)} .bp-tb-t{font:800 17px var(--font);letter-spacing:.02em;fill:var(--bp-ink)}
+.bp-vl{font:800 14px var(--font);letter-spacing:.07em;text-transform:uppercase;fill:var(--bp-ink);text-anchor:middle}
+.bp-vs{font:600 11px var(--mono);fill:var(--bp-ink2);text-anchor:middle}
+.bp-vbar{stroke:var(--bp-ink);stroke-width:2.2}
+.bp-nt{font:500 10.5px var(--mono);fill:var(--bp-ink)} .bp-nh{font:800 10.5px var(--font);letter-spacing:.12em;fill:var(--bp-ink)}
+.bp-sb-a{fill:var(--bp-ink);stroke:var(--bp-ink);stroke-width:1} .bp-sb-b{fill:var(--bp-paper);stroke:var(--bp-ink);stroke-width:1}
+
+/* ===== Parts list (bill of materials) ===== */
+.bp-main{display:block}
+.bp-bomwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.bp-bom{width:100%;border-collapse:collapse;font-size:14.5px}
+.bp-bom th{font:700 11.5px/1 var(--font);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:12px 14px;border-bottom:2px solid var(--line);white-space:nowrap}
+.bp-bom td{padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.bp-bom tbody tr:last-child td{border-bottom:0}
+.bp-bom td:first-child,.bp-bom th:first-child{width:58px}
+.bp-bom .n{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;border:1.6px solid var(--ink);font:700 12px var(--font);transition:background .15s}
+.bp-bom td.q,.bp-bom th.q{text-align:center;font-family:var(--mono)}
+.bp-bom td.m{color:var(--muted)} .bp-bom td b{font-weight:700}
+.bp-bom tr[data-part]{transition:background .15s;outline:none}
+.bp-bom tr[data-part].hl,.bp-bom tr[data-part].on{background:var(--bp-hl-soft)}
+.bp-bom tr[data-part]:focus-visible{box-shadow:inset 3px 0 0 var(--bp-hl)}
+.bp-bom tr.hl .n,.bp-bom tr.on .n{background:var(--bp-hl);border-color:var(--bp-hl);color:var(--bp-on-hl)}
+.bp-key{width:38px;height:12px;flex:none;overflow:visible}
+.legend li{align-items:center}
+
+/* ===== Handwritten = pencil sketch on graph paper (only when asked: data-style="handwritten") ===== */
+:root.hand.hand{
+  --bg:#e8e3d6; --surface:#fdfbf3; --ink:#2b2d38; --muted:#575b6b; --line:#bccfb0; --zone:#f3eedf;
+  --c1:#2a4d9b; --c1-soft:rgba(100,170,255,.28); --c2:#1e8449; --c2-soft:rgba(130,230,140,.30); --c3:#b9770e; --c3-soft:rgba(255,230,90,.45);
+  --c4:#c0392b; --c4-soft:rgba(255,140,170,.35); --c5:#7d3c98; --c5-soft:rgba(205,150,220,.35); --on-accent:#222; --shadow:rgba(0,0,0,.16);
+  --bp-paper:#fbf8ec; --bp-grid-minor:rgba(70,150,90,.22); --bp-grid-major:rgba(60,140,80,.45);
+  --bp-ink:#2a2b33; --bp-ink2:#51535e; --bp-dim:#2a4d9b; --bp-face:rgba(120,120,130,.07); --bp-hatch:rgba(42,43,51,.55);
+  --bp-body:#f6f2e4; --bp-hl:#c0392b; --bp-hl-soft:rgba(255,230,90,.5); --bp-on-hl:#fff; --bp-frame:#2a2b33;
+  --font:'Kalam','Patrick Hand','Segoe Print','Comic Sans MS',cursive; --mono:'Kalam','Segoe Print','Comic Sans MS',cursive;
+  --title:'Caveat','Kalam','Segoe Print',cursive;
+  color-scheme:light;
+}
+.hand body::before{display:none}
+.hand h1{font-family:var(--title);font-size:clamp(42px,6vw,60px);font-weight:700;letter-spacing:0}
+.hand h1 .accent{color:var(--c4);-webkit-background-clip:border-box;background-clip:border-box;background:none}
+.hand h2{font-family:var(--title);font-size:32px;font-weight:700;color:var(--c4)}
+.hand .eyebrow{background:none;border:0;padding:0;font:700 22px/1 var(--title);letter-spacing:0;text-transform:none;color:var(--c4)}
+.hand .eyebrow::before{display:none}
+.hand .stage.bp-stage{border:2px solid #2a2b33;box-shadow:none}
+.hand .bp-outline,.hand .bp-detail,.hand .bp-hidden,.hand .bp-center,.hand .bp-cut,.hand .bp-thin,.hand .bp-frame,.hand .bp-solid{filter:url(#bp-rough)}
+.hand .bp-outline{stroke-width:2.1;stroke:#2a2b33;opacity:.92}
+.hand .bp-frame{stroke-width:2}
+.hand .bp-t,.hand .bp-dt,.hand .bp-bt,.hand .bp-tb-v,.hand .bp-nt,.hand .bp-vs{font-weight:400}
+.hand .bp-key *{filter:none}
+.hand .bp-tb-l{font-size:7px;letter-spacing:.04em}
+.hand .bp-tb-v{font-size:10.5px}
+.hand .bp-vl{font-size:18px}
+.hand .bp-t.lg,.hand .bp-tb-t{font-family:var(--title);font-size:21px;font-weight:700;letter-spacing:.01em;text-transform:none}
+.hand .bp-dt{font-size:13.5px;font-weight:700}
+.hand .bp-bom th{font-family:var(--font)}
+.hand .bp-btn{border:2px solid #2a2b33;border-radius:6px 14px 8px 16px}
+.hand .bp-bomwrap{border:2px solid #2a2b33;border-radius:6px 14px 8px 16px}
+
+@page{size:A4 landscape;margin:7mm}
+@media print{
+  html,body{background:#fff !important}
+  :root,:root[data-theme="light"]{
+    --bg:#ffffff; --surface:#ffffff; --ink:#0e2247; --muted:#3d4f70; --line:#9fb0cb; --zone:#f1f5fa; --shadow:transparent;
+    --c1:#0b66b3; --c1-soft:#d9ebfa; --c2:#0b8a64; --c2-soft:#d2f0e4; --c3:#b45f00; --c3-soft:#fde8cc; --c4:#c0225e; --c4-soft:#fcdfea; --c5:#5a3fd0; --c5-soft:#e6e0fb;
+    --bp-paper:#ffffff; --bp-grid-minor:rgba(30,90,160,.10); --bp-grid-major:rgba(30,90,160,.22);
+    --bp-ink:#0f2d63; --bp-ink2:#3d5a8f; --bp-dim:#0b6ab0; --bp-face:rgba(15,45,99,.04); --bp-hatch:rgba(15,45,99,.6);
+    --bp-body:#eef3fa; --bp-hl:#d9480f; --bp-hl-soft:rgba(217,72,15,.14); --bp-on-hl:#fff; --bp-frame:#0f2d63;
+  }
+  :root.hand.hand{--bg:#fff;--surface:#fff}
+  .bp-bar,.bp-extra,.scroll-hint,.page > .eyebrow,.page > h1,.page > .lede,.page > .chips{display:none !important}
+  .page{max-width:none;padding:0}
+  .bp-main{display:grid;grid-template-columns:minmax(0,1fr) 74mm;gap:5mm;align-items:start}
+  .stage.bp-stage{border:0;box-shadow:none;border-radius:0;break-inside:avoid;overflow:visible}
+  .stage.bp-stage > svg{width:100%;height:auto;max-height:178mm;min-width:0 !important}
+  .stage.bp-stage figcaption{display:none}
+  .bp-side h2{margin:0 0 2mm;font-size:11pt}
+  .bp-side h2::after{display:none}
+  .bp-bomwrap{border-radius:0;overflow:visible;break-inside:avoid}
+  .bp-bom{font-size:8pt} .bp-bom th{padding:2mm 1.6mm;font-size:6.5pt} .bp-bom td{padding:1.4mm 1.6mm}
+  .bp-bom td:first-child,.bp-bom th:first-child{width:8mm}
+  .bp-bom .n{width:5mm;height:5mm;font-size:6.5pt}
+  .legend{font-size:7.5pt;margin-top:3mm;gap:2mm 4mm} .bp-side .legend{flex-direction:column}
+  .note{margin-top:3mm;padding-top:2mm;font-size:7.5pt}
+  .bp-part.hl .bp-outline{stroke-width:2.3}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<!-- Shared defs: gradients, shadow, arrowheads, icon library. Icons: a use element pointing at an i-* symbol id, e.g. i-sun (see SKILL.md) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="7" style="flood-color:var(--shadow)"/></filter>
+  <!-- card fill: surface → soft tint -->
+  <linearGradient id="g-c1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--c1-soft)"/></linearGradient>
+  <linearGradient id="g-c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--c2-soft)"/></linearGradient>
+  <linearGradient id="g-c3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--c3-soft)"/></linearGradient>
+  <linearGradient id="g-c4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--c4-soft)"/></linearGradient>
+  <linearGradient id="g-c5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--c5-soft)"/></linearGradient>
+  <!-- scene washes: fade = strong at top, rise = strong at bottom -->
+  <linearGradient id="fade-c1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c1-soft)"/><stop offset="1" style="stop-color:var(--c1-soft);stop-opacity:0"/></linearGradient>
+  <linearGradient id="fade-c2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c2-soft)"/><stop offset="1" style="stop-color:var(--c2-soft);stop-opacity:.25"/></linearGradient>
+  <linearGradient id="fade-c3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c3-soft)"/><stop offset="1" style="stop-color:var(--c3-soft);stop-opacity:0"/></linearGradient>
+  <linearGradient id="fade-c4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c4-soft)"/><stop offset="1" style="stop-color:var(--c4-soft);stop-opacity:0"/></linearGradient>
+  <linearGradient id="fade-c5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c5-soft)"/><stop offset="1" style="stop-color:var(--c5-soft);stop-opacity:0"/></linearGradient>
+  <linearGradient id="rise-c1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--c1-soft)"/><stop offset="1" style="stop-color:var(--c1-soft);stop-opacity:.2"/></linearGradient>
+  <linearGradient id="rise-c2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--c2-soft)"/><stop offset="1" style="stop-color:var(--c2-soft);stop-opacity:.2"/></linearGradient>
+  <linearGradient id="rise-c3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--c3-soft)"/><stop offset="1" style="stop-color:var(--c3-soft);stop-opacity:.2"/></linearGradient>
+  <linearGradient id="rise-c4" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--c4-soft)"/><stop offset="1" style="stop-color:var(--c4-soft);stop-opacity:.2"/></linearGradient>
+  <linearGradient id="rise-c5" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--c5-soft)"/><stop offset="1" style="stop-color:var(--c5-soft);stop-opacity:.2"/></linearGradient>
+  <!-- arrowheads: one per colour (markers don't inherit the path colour) -->
+  <marker id="arr"    viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--muted)"/></marker>
+  <marker id="arr-c1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--c1)"/></marker>
+  <marker id="arr-c2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--c2)"/></marker>
+  <marker id="arr-c3" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--c3)"/></marker>
+  <marker id="arr-c4" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--c4)"/></marker>
+  <marker id="arr-c5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 z" style="fill:var(--c5)"/></marker>
+
+  <!-- ===== Blueprint defs: sheet grid, hatch patterns for sections, pencil wobble ===== -->
+  <pattern id="bp-gridpat" width="100" height="100" patternUnits="userSpaceOnUse"><path class="bp-gm" d="M20 0V100M40 0V100M60 0V100M80 0V100M0 20H100M0 40H100M0 60H100M0 80H100"/><path class="bp-gM" d="M0 0H100M0 0V100"/></pattern>
+  <pattern id="bp-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path class="bp-hp" d="M0 0V6"/></pattern>
+  <pattern id="bp-hatch2" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><path class="bp-hp" d="M0 0V6"/></pattern>
+  <pattern id="bp-hatchf" width="3.5" height="3.5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path class="bp-hp f" d="M0 0V3.5"/></pattern>
+  <pattern id="bp-cross" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path class="bp-hp f" d="M0 0V7M0 0H7"/></pattern>
+  <pattern id="bp-dots" width="7" height="7" patternUnits="userSpaceOnUse"><circle class="bp-hd" cx="1.5" cy="1.5" r=".8"/><circle class="bp-hd" cx="5" cy="5" r=".8"/></pattern>
+  <filter id="bp-rough" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6"/></filter>
+
+  <!-- ===== Icon library (24×24 line icons, colour = currentColor) ===== -->
+  <!-- nature & science -->
+  <symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/></g></symbol>
+  <symbol id="i-rain" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2M16 14v6M8 14v6M12 16v6"/></g></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5S12.5 5.5 12 3c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7z"/></g></symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7c.6.5 1.2 1 2.5 1C7 8 7 6 9.5 6s2.4 2 5 2 2.5-2 5-2c1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2s2.4 2 5 2 2.5-2 5-2c1.3 0 1.9.5 2.5 1M2 17c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2s2.4 2 5 2 2.5-2 5-2c1.3 0 1.9.5 2.5 1"/></g></symbol>
+  <symbol id="i-wind" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h11a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 16h8"/></g></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10z"/><path d="M2 21c0-3 1.9-5.4 5.1-6C9.5 14.5 12 13 13 12"/></g></symbol>
+  <symbol id="i-sprout" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V11M12 11C12 7 9 5 5 5c0 4 3 6 7 6zM12 13c0-4 3-6 7-6 0 4-3 6-7 6z"/></g></symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5M12 2 5 12h4l-3 5h12l-3-5h4z"/></g></symbol>
+  <symbol id="i-mountain" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20 9 7l4 6 3-4 6 11z"/></g></symbol>
+  <symbol id="i-fire" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></g></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.5a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z"/></g></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></g></symbol>
+  <symbol id="i-atom" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></g></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M10 2v6L4.5 18a2.5 2.5 0 0 0 2.2 4h10.6a2.5 2.5 0 0 0 2.2-4L14 8V2M7 15h10"/></g></symbol>
+  <symbol id="i-cell" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><circle cx="10" cy="11" r="3"/><path d="M16 16h.01M16.5 8h.01M7 17h.01"/></g></symbol>
+  <symbol id="i-dna" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2c0 7 10 7 10 14 0 2.5-1 4.5-2 6M17 2c0 7-10 7-10 14 0 2.5 1 4.5 2 6M8 6h8M8 18h8"/></g></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></g></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+  <!-- people & places -->
+  <symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></g></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8M22 21a6 6 0 0 0-4-5.6"/></g></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8M5 9.5V21h14V9.5M10 21v-6h4v6"/></g></symbol>
+  <symbol id="i-factory" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21V9l6 4V9l6 4V4h6v17zM2 21h20"/></g></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21v-10M9.5 21v-10M14.5 21v-10M19 21v-10M2 10l10-7 10 7z"/></g></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h11v11H2zM13 9h4l4 4v3h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></g></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></g></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V3M4 4h13l-2.5 4.5L17 13H4"/></g></symbol>
+  <!-- tech -->
+  <symbol id="i-laptop" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M2 20h20"/></g></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></g></symbol>
+  <symbol id="i-server" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="7.5" rx="2"/><rect x="3" y="13.5" width="18" height="7.5" rx="2"/><path d="M7 6.8h.01M7 17.3h.01"/></g></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></g></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></g></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></g></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></g></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></g></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></g></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 21 2M17 6l3 3M14.5 8.5l2 2"/></g></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></g></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-5-5"/></g></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7 10-7"/></g></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L3 21l2-6.2A8 8 0 1 1 21 12z"/></g></symbol>
+  <!-- business & ideas -->
+  <symbol id="i-coin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M15 9.5c-.4-1-1.5-1.7-3-1.7-1.7 0-3 .9-3 2.1 0 2.9 6 1.3 6 4.2 0 1.2-1.3 2.1-3 2.1-1.5 0-2.6-.7-3-1.7M12 6v1.8M12 16.2V18"/></g></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L22 7H6"/></g></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15l4-4 3 3 6-6"/></g></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></g></symbol>
+  <symbol id="i-idea" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></g></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h6"/></g></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14"/></g></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></g></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></g></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3 6.5 7 .8-5.2 4.8 1.5 7L12 17.6l-6.3 3.5 1.5-7L2 9.3l7-.8z"/></g></symbol>
+  <!-- status -->
+  <symbol id="i-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></g></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 21h20zM12 10v5M12 18h.01"/></g></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 9 6 6M15 9l-6 6"/></g></symbol>
+  <symbol id="i-loop" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12A9 9 0 0 1 18.5 5.8M18 2v4h-4M6 22v-4h4"/></g></symbol>
+</defs></svg>
+
+<button class="theme-toggle" type="button" aria-label="Switch to light theme">☀</button>
+<main class="page">
+  <p class="eyebrow">Blueprint · Product</p>
+  <h1>Desk lamp <span class="accent">blueprint</span></h1>
+  <p class="lede">Front, side and top views of an articulated desk lamp, with dimensions, numbered parts and a detail of the elbow joint.</p>
+  <ul class="chips"><li><b>11</b> parts</li><li><b>3</b> views + <b>1</b> detail</li><li>Scale <b>1:3</b> (A3)</li><li>Sizes <b>illustrative</b></li></ul>
+
+<div class="bp-bar" role="group" aria-label="Drawing layers">
+  <span class="bp-bar-lbl">Layers</span>
+  <button class="bp-btn" id="bp-dims" type="button" aria-pressed="true" title="Show or hide the dimension lines">Dimensions</button>
+  <button class="bp-btn" id="bp-hidden" type="button" aria-pressed="true" title="Show or hide the dashed hidden lines">Hidden lines</button>
+  <button class="bp-btn" id="bp-grid" type="button" aria-pressed="true" title="Show or hide the paper grid">Grid</button>
+  <button class="bp-btn plain" id="bp-print" type="button">Print / Save PDF</button>
+</div>
+
+<div class="bp-main">
+<figure class="stage bp-stage" id="bp-stage">
+  <svg class="bp-sheet" viewBox="0 0 1000 700" data-unit="mm" role="img" aria-label="Technical drawing of an articulated desk lamp: front, side and top views, and a detail of the elbow joint, with dimensions and numbered parts.">
+<g class="bp-view" data-k="1.2594">
+<path class="bp-center" d="M170 370.41L170 60.75"/>
+<g class="bp-part" data-part="11" data-step="1">
+<rect class="bp-outline bp-body" x="126.65" y="369.62" width="11.12" height="2.38"/><rect class="bp-outline bp-body" x="164.44" y="369.62" width="11.12" height="2.38"/><rect class="bp-outline bp-body" x="202.24" y="369.62" width="11.12" height="2.38"/>
+</g>
+<g class="bp-part" data-part="1" data-step="1">
+<path class="bp-outline bp-body" d="M106.48 369.62L233.52 369.62L233.52 355.33L230.34 352.15L109.66 352.15L106.48 355.33Z"/>
+</g>
+<g class="bp-part" data-part="9" data-step="1">
+<rect class="bp-outline bp-body" x="125.54" y="348.18" width="12.7" height="3.97"/>
+</g>
+<g class="bp-part" data-part="3" data-step="2">
+<path class="bp-outline bp-body" d="M165.11 320.13L284.21 99.4L293.99 104.68L174.89 325.41Z"/><path class="bp-center" d="M170 322.77L289.1 102.04"/>
+</g>
+<g class="bp-part" data-part="5" data-step="4">
+<path class="bp-outline bp-body" d="M288.41 96.52L478.97 72.7L480.35 83.74L289.79 107.56Z"/><path class="bp-center" d="M289.1 102.04L479.66 78.22"/>
+</g>
+<g class="bp-part" data-part="2" data-step="2">
+<rect class="bp-outline bp-body" x="158.09" y="316.42" width="23.82" height="35.73"/><circle class="bp-outline bp-body" cx="170" cy="322.77" r="9.53"/><circle class="bp-detail" cx="170" cy="322.77" r="2.78"/>
+</g>
+<g class="bp-part" data-part="4" data-step="3">
+<circle class="bp-outline bp-body" cx="289.1" cy="102.04" r="10.32"/><circle class="bp-detail" cx="289.1" cy="102.04" r="7.94"/><circle class="bp-detail" cx="289.1" cy="102.04" r="3.18"/>
+</g>
+<g class="bp-part" data-part="6" data-step="4">
+<path class="bp-outline bp-body" d="M483.23 78.22L483.23 92.51L476.09 92.51L476.09 78.22Z"/><circle class="bp-outline bp-body" cx="479.66" cy="78.22" r="8.73"/><circle class="bp-detail" cx="479.66" cy="78.22" r="2.78"/>
+</g>
+<g class="bp-part" data-part="7" data-step="5">
+<path class="bp-outline bp-body" d="M502.04 100.66L498.29 192.24L401.29 156.93L457.28 84.37Z"/><path class="bp-detail" d="M502.04 100.66L457.28 84.37"/><path class="bp-detail" d="M498.29 192.24L401.29 156.93"/><path class="bp-center" d="M481.83 86.54L443.81 191"/>
+</g>
+<g class="bp-part" data-part="8" data-step="5">
+<path class="bp-hidden" d="M489.15 131.45L491.32 125.48L449.54 110.28L447.36 116.25Z"/>
+</g>
+<circle class="bp-thin" cx="289.1" cy="102.04" r="30" style="stroke-dasharray:4 3"/>
+<text class="bp-t lg" x="320.1" y="136.04">B</text>
+<path class="bp-thin" d="M310.1 123.04L318.1 129.04"/>
+<g class="bp-dim" data-x1="106.48" data-y1="372" data-x2="233.52" data-y2="372" data-offset="24"></g>
+<g class="bp-dim" data-x1="106.48" data-y1="372" data-x2="501.89" data-y2="372" data-offset="52"></g>
+<g class="bp-dim" data-type="v" data-x1="106.48" data-y1="372" data-x2="289.1" data-y2="102.04" data-at="56"></g>
+<g class="bp-dim" data-x1="170" data-y1="69.49" data-x2="479.66" data-y2="69.49" data-offset="-26"></g>
+<g class="bp-dim" data-x1="401.29" data-y1="156.93" data-x2="498.29" data-y2="192.24" data-offset="30"></g>
+<g class="bp-dim" data-type="angle" data-cx="479.66" data-cy="92.51" data-r="84" data-a1="90" data-a2="110" data-text="20°"></g>
+<path class="bp-center" d="M479.66 92.51L479.66 186.51" style="stroke-dasharray:10 3 2 3"/>
+<g class="bp-balloon" data-n="1" data-x="219.23" data-y="360.88" data-tx="266.87" data-ty="341.35"></g>
+<g class="bp-balloon" data-n="11" data-x="207.79" data-y="370.81" data-tx="266" data-ty="386"></g>
+<g class="bp-balloon" data-n="9" data-x="131.89" data-y="347.39" data-tx="142" data-ty="300"></g>
+<g class="bp-balloon" data-n="2" data-x="176.35" data-y="337.06" data-tx="214.46" data-ty="295.78"></g>
+<g class="bp-balloon" data-n="3" data-x="223.6" data-y="223.44" data-tx="196" data-ty="214"></g>
+<g class="bp-balloon" data-n="4" data-x="293.86" data-y="106.8" data-tx="252" data-ty="66"></g>
+<g class="bp-balloon" data-n="5" data-x="384.38" data-y="90.13" data-tx="345" data-ty="68"></g>
+<g class="bp-balloon" data-n="6" data-x="487.66" data-y="73.22" data-tx="529.66" data-ty="104.22"></g>
+<g class="bp-balloon" data-n="7" data-x="488.59" data-y="188.71" data-tx="524" data-ty="205"></g>
+<g class="bp-balloon" data-n="8" data-x="469.34" data-y="120.86" data-tx="356" data-ty="136"></g>
+<g class="bp-viewlabel" data-x="305" data-y="452" data-text="View A — Front" data-sub="Scale 1:3"></g>
+</g>
+<g class="bp-view" data-k="1.2594">
+<path class="bp-center" d="M600 370.41L600 60.75"/>
+<g class="bp-part" data-part="11" data-step="1">
+<rect class="bp-outline bp-body" x="550.77" y="369.62" width="11.12" height="2.38"/><rect class="bp-outline bp-body" x="616.28" y="369.62" width="11.12" height="2.38"/>
+</g>
+<g class="bp-part" data-part="1" data-step="1">
+<path class="bp-outline bp-body" d="M536.48 369.62L663.52 369.62L663.52 355.33L660.34 352.15L539.66 352.15L536.48 355.33Z"/>
+</g>
+<g class="bp-part" data-part="9" data-step="1">
+<rect class="bp-outline bp-body" x="563.48" y="348.18" width="12.7" height="3.97"/>
+</g>
+<g class="bp-part" data-part="3" data-step="2">
+<rect class="bp-outline bp-body" x="594.44" y="102.04" width="11.12" height="220.73"/>
+</g>
+<g class="bp-part" data-part="5" data-step="4">
+<rect class="bp-outline bp-body" x="594.44" y="72.66" width="11.12" height="34.94"/>
+</g>
+<g class="bp-part" data-part="2" data-step="2">
+<rect class="bp-outline bp-body" x="588.09" y="316.42" width="23.82" height="35.73"/>
+</g>
+<g class="bp-part" data-part="4" data-step="3">
+<rect class="bp-outline bp-body" x="581.74" y="91.72" width="30.17" height="20.64"/><path class="bp-detail" d="M588.09 91.72L588.09 112.36"/>
+</g>
+<g class="bp-part" data-part="6" data-step="4">
+<rect class="bp-outline bp-body" x="590.47" y="69.49" width="19.06" height="17.47"/>
+</g>
+<g class="bp-part" data-part="7" data-step="5">
+<path class="bp-outline bp-body" d="M548.39 174.59L548.83 172.28L576.38 91.45L576.99 90.4L577.99 89.39L579.37 88.44L581.1 87.55L583.16 86.75L585.5 86.05L588.09 85.46L590.88 84.98L593.84 84.64L596.89 84.44L600 84.36L603.11 84.44L606.16 84.64L609.12 84.98L611.91 85.46L614.5 86.05L616.84 86.75L618.9 87.55L620.63 88.44L622.01 89.39L623.01 90.4L623.62 91.45L651.17 172.28L651.61 174.59L651.17 176.89L649.85 179.15L647.68 181.34L644.7 183.41L640.95 185.33L636.49 187.07L631.42 188.59L625.8 189.87L619.75 190.89L613.36 191.63L606.74 192.09L600 192.24L593.26 192.09L586.64 191.63L580.25 190.89L574.2 189.87L568.58 188.59L563.51 187.07L559.05 185.33L555.3 183.41L552.32 181.34L550.15 179.15L548.83 176.89Z"/><path class="bp-detail" d="M623.82 92.51L623.62 93.58L623.01 94.62L622.01 95.63L620.63 96.59L618.9 97.47L616.84 98.27L614.5 98.98L611.91 99.57L609.12 100.04L606.17 100.38L603.11 100.59L600 100.66L596.89 100.59L593.83 100.38L590.88 100.04L588.09 99.57L585.5 98.98L583.16 98.27L581.1 97.47L579.37 96.59L577.99 95.63L576.99 94.62L576.38 93.58L576.18 92.51L576.38 91.45L576.99 90.4L577.99 89.39L579.37 88.44L581.1 87.55L583.16 86.75L585.5 86.05L588.09 85.46L590.88 84.99L593.83 84.64L596.89 84.43L600 84.37L603.11 84.43L606.17 84.64L609.12 84.99L611.91 85.46L614.5 86.05L616.84 86.75L618.9 87.55L620.63 88.44L622.01 89.39L623.01 90.4L623.62 91.45Z"/>
+</g>
+<g class="bp-part" data-part="8" data-step="5">
+<path class="bp-hidden" d="M622.23 120.86L622.04 121.86L621.47 122.83L620.54 123.77L619.25 124.67L617.64 125.49L615.72 126.24L613.53 126.9L611.12 127.45L608.51 127.89L605.75 128.21L602.9 128.4L600 128.47L597.1 128.4L594.25 128.21L591.49 127.89L588.88 127.45L586.47 126.9L584.28 126.24L582.36 125.49L580.75 124.67L579.46 123.77L578.53 122.83L577.96 121.86L577.77 120.86L577.96 119.87L578.53 118.9L579.46 117.95L580.75 117.06L582.36 116.24L584.28 115.49L586.47 114.83L588.88 114.28L591.49 113.84L594.25 113.52L597.1 113.33L600 113.26L602.9 113.33L605.75 113.52L608.51 113.84L611.12 114.28L613.53 114.83L615.72 115.49L617.64 116.24L619.25 117.06L620.54 117.95L621.47 118.9L622.04 119.87Z"/>
+</g>
+<g class="bp-part" data-part="10" data-step="6">
+<rect class="bp-outline bp-body" x="653.99" y="356.12" width="9.53" height="11.12"/><path class="bp-detail" d="M673.05 361.68C688.93 361.68 688.93 368.82 711.16 368.82" style="stroke-width:5.5"/><path class="bp-hole" d="M673.05 361.68C688.93 361.68 688.93 368.82 711.16 368.82"/>
+</g>
+<g class="bp-dim" data-x1="536.48" data-y1="372" data-x2="663.52" data-y2="372" data-offset="24"></g>
+<g class="bp-dim" data-type="v" data-x1="663.52" data-y1="372" data-x2="609.53" data-y2="69.49" data-at="678"></g>
+<g class="bp-balloon" data-n="1" data-x="547.6" data-y="361.68" data-tx="553.6" data-ty="319.6"></g>
+<g class="bp-balloon" data-n="10" data-x="700.04" data-y="368.43" data-tx="708.04" data-ty="330.36"></g>
+<g class="bp-balloon" data-n="9" data-x="563.48" data-y="346.59" data-tx="537.48" data-ty="298.95"></g>
+<g class="bp-balloon" data-n="11" data-x="621.84" data-y="370.81" data-tx="645.84" data-ty="402.79"></g>
+<g class="bp-viewlabel" data-x="600" data-y="452" data-text="View B — Side" data-sub="Scale 1:3"></g>
+</g>
+<g class="bp-view" data-k="1.2594">
+<path class="bp-center" d="M93.78 545L503.48 545"/>
+<path class="bp-center" d="M170 468.78L170 621.22"/>
+<g class="bp-part" data-part="11" data-step="1">
+<circle class="bp-hidden" cx="170" cy="588.67" r="5.56"/><circle class="bp-hidden" cx="132.21" cy="523.16" r="5.56"/><circle class="bp-hidden" cx="207.79" cy="523.16" r="5.56"/>
+</g>
+<g class="bp-part" data-part="1" data-step="1">
+<circle class="bp-outline bp-body" cx="170" cy="545" r="63.52"/><circle class="bp-detail" cx="170" cy="545" r="60.34"/>
+</g>
+<g class="bp-part" data-part="9" data-step="1">
+<rect class="bp-outline bp-body" x="125.54" y="577.55" width="12.7" height="7.94"/>
+</g>
+<g class="bp-part" data-part="3" data-step="2">
+<rect class="bp-outline bp-body" x="170" y="550.56" width="119.1" height="11.12"/>
+</g>
+<g class="bp-part" data-part="5" data-step="4">
+<rect class="bp-outline bp-body" x="289.1" y="550.56" width="190.56" height="11.12"/>
+</g>
+<g class="bp-part" data-part="2" data-step="2">
+<circle class="bp-outline bp-body" cx="170" cy="545" r="11.91"/>
+</g>
+<g class="bp-part" data-part="4" data-step="3">
+<rect class="bp-outline bp-body" x="278.78" y="556.91" width="20.64" height="23.82"/>
+</g>
+<g class="bp-part" data-part="6" data-step="4">
+<rect class="bp-outline bp-body" x="470.93" y="554.53" width="17.47" height="19.06"/>
+</g>
+<g class="bp-part" data-part="7" data-step="5">
+<path class="bp-outline bp-body" d="M401.29 545L401.7 538.26L402.94 531.64L404.98 525.25L407.79 519.2L411.31 513.58L415.5 508.51L420.26 504.06L425.54 500.3L431.23 497.32L437.24 495.15L443.46 493.83L449.79 493.39L456.12 493.83L462.34 495.15L468.35 497.32L474.04 500.3L479.31 504.06L484.08 508.51L488.26 513.58L491.79 519.2L499.05 533.09L500.34 535.88L501.28 538.84L501.85 541.89L502.04 545L501.85 548.11L501.28 551.16L500.34 554.12L499.05 556.91L491.79 570.8L488.26 576.42L484.08 581.49L479.31 585.95L474.04 589.7L468.35 592.68L462.34 594.85L456.12 596.17L449.79 596.61L443.46 596.17L437.24 594.85L431.23 592.68L425.54 589.7L420.26 585.95L415.5 581.49L411.31 576.42L407.79 570.8L404.98 564.75L402.94 558.36L401.7 551.74Z"/><path class="bp-detail" d="M502.04 545L501.85 548.11L501.28 551.17L500.34 554.12L499.04 556.91L497.42 559.5L495.49 561.84L493.29 563.9L490.85 565.63L488.23 567.01L485.45 568.01L482.58 568.62L479.66 568.82L476.74 568.62L473.87 568.01L471.09 567.01L468.47 565.63L466.03 563.9L463.83 561.84L461.9 559.5L460.28 556.91L458.98 554.12L458.04 551.17L457.47 548.11L457.28 545L457.47 541.89L458.04 538.83L458.98 535.88L460.28 533.09L461.9 530.5L463.83 528.16L466.03 526.1L468.47 524.37L471.09 522.99L473.87 521.99L476.74 521.38L479.66 521.18L482.58 521.38L485.45 521.99L488.23 522.99L490.85 524.37L493.29 526.1L495.49 528.16L497.42 530.5L499.04 533.09L500.34 535.88L501.28 538.83L501.85 541.89Z"/>
+</g>
+<g class="bp-part" data-part="8" data-step="5">
+<path class="bp-hidden" d="M490.23 545L490.05 547.9L489.52 550.75L488.64 553.51L487.43 556.12L485.91 558.53L484.11 560.72L482.06 562.64L479.79 564.25L477.34 565.54L474.75 566.47L472.07 567.04L469.34 567.23L466.61 567.04L463.93 566.47L461.35 565.54L458.89 564.25L456.62 562.64L454.57 560.72L452.77 558.53L451.25 556.12L450.04 553.51L449.16 550.75L448.63 547.9L448.45 545L448.63 542.1L449.16 539.25L450.04 536.49L451.25 533.88L452.77 531.47L454.57 529.28L456.62 527.36L458.89 525.75L461.35 524.46L463.93 523.53L466.61 522.96L469.34 522.77L472.07 522.96L474.75 523.53L477.34 524.46L479.79 525.75L482.06 527.36L484.11 529.28L485.91 531.47L487.43 533.88L488.64 536.49L489.52 539.25L490.05 542.1Z"/>
+</g>
+<g class="bp-part" data-part="10" data-step="6">
+<rect class="bp-outline bp-body" x="165.24" y="471.95" width="9.53" height="9.53"/><path class="bp-detail" d="M170 471.95C170 459.25 149.36 459.25 144.59 445.75" style="stroke-width:5.5"/><path class="bp-hole" d="M170 471.95C170 459.25 149.36 459.25 144.59 445.75"/>
+</g>
+<g class="bp-dim" data-type="dia" data-cx="170" data-cy="545" data-r="63.52" data-angle="225" data-ext="24"></g>
+<g class="bp-balloon" data-n="1" data-x="229.71" data-y="566.72" data-tx="270" data-ty="620"></g>
+<g class="bp-balloon" data-n="9" data-x="131.89" data-y="581.52" data-tx="133.89" data-ty="612"></g>
+<g class="bp-balloon" data-n="2" data-x="177.15" data-y="537.85" data-tx="196" data-ty="484"></g>
+<g class="bp-balloon" data-n="11" data-x="211.79" data-y="523.16" data-tx="252" data-ty="492"></g>
+<g class="bp-balloon" data-n="10" data-x="144.59" data-y="448.13" data-tx="112" data-ty="452"></g>
+<g class="bp-balloon" data-n="3" data-x="233.52" data-y="551" data-tx="262" data-ty="580"></g>
+<g class="bp-balloon" data-n="5" data-x="384.38" data-y="539.44" data-tx="384.38" data-ty="516.42"></g>
+<g class="bp-balloon" data-n="4" data-x="297.1" data-y="554.53" data-tx="306" data-ty="590"></g>
+<g class="bp-balloon" data-n="7" data-x="481.55" data-y="579.94" data-tx="481.55" data-ty="621.22"></g>
+<g class="bp-balloon" data-n="8" data-x="469.34" data-y="545" data-tx="472.52" data-ty="497.36"></g>
+<g class="bp-viewlabel" data-x="305" data-y="648" data-text="View C — Top" data-sub="Scale 1:3"></g>
+</g>
+<g class="bp-view" data-k="0.42">
+<g class="bp-part" data-part="3" data-step="2">
+<path class="bp-outline bp-body" d="M820.33 197.09L770.52 289.4L799.86 305.23L849.67 212.91Z"/><path class="bp-detail" d="M822.85 198.44L773.04 290.76"/><path class="bp-detail" d="M847.15 211.56L797.34 303.87"/><path class="bp-center" d="M835 205L785.19 297.31"/>
+</g>
+<g class="bp-part" data-part="5" data-step="4">
+<path class="bp-outline bp-body" d="M837.07 221.54L931.32 209.76L927.19 176.68L832.93 188.46Z"/><path class="bp-detail" d="M836.71 218.7L930.97 206.92"/><path class="bp-detail" d="M833.29 191.3L927.54 179.52"/><path class="bp-center" d="M835 205L929.25 193.22"/>
+</g>
+<g class="bp-part" data-part="4" data-step="3">
+<circle class="bp-outline bp-body" cx="835" cy="205" r="30.95"/><circle class="bp-detail" cx="835" cy="205" r="23.81"/><circle class="bp-detail" cx="835" cy="205" r="9.52"/><circle class="bp-hidden" cx="835" cy="205" r="15.48"/>
+</g>
+<path class="bp-center" d="M791 205L879 205"/><path class="bp-center" d="M835 161L835 249"/>
+<path class="bp-detail" d="M804.14 303.57L793.9 305.99L790.31 296.1L780.07 298.53L776.48 288.64L766.24 291.06"/><path class="bp-detail" d="M923.34 174.14L931.26 181.08L925.29 189.75L933.21 196.69L927.24 205.36L935.17 212.3"/>
+<g class="bp-dim" data-type="dia" data-cx="835" data-cy="205" data-r="30.95" data-angle="-55" data-ext="24"></g>
+<g class="bp-dim" data-type="dia" data-cx="835" data-cy="205" data-r="23.81" data-angle="160" data-ext="34"></g>
+<g class="bp-dim" data-x1="927.19" data-y1="176.68" data-x2="931.32" data-y2="209.75" data-offset="-26"></g>
+<g class="bp-balloon" data-n="4" data-x="856.67" data-y="226.67" data-tx="885" data-ty="277"></g>
+<g class="bp-balloon" data-n="3" data-x="798.09" data-y="253.16" data-tx="758.09" data-ty="271.16"></g>
+<g class="bp-balloon" data-n="5" data-x="898.13" data-y="211.11" data-tx="898.13" data-ty="259.11"></g>
+<g class="bp-viewlabel" data-x="835" data-y="372" data-text="Detail B — Elbow joint" data-sub="Scale 1:1"></g>
+</g>
+<g class="bp-notes" data-x="742" data-y="588" data-valign="bottom" data-w="238" data-title="GENERAL NOTES" data-lines="Dimensions in mm unless stated. Illustrative, not for manufacture.|First-angle projection. Sheet A3, scale 1:3 (detail B 1:1).|Tube wall 1.2 mm; matt black powder-coat finish.|REV A: first issue, 09 Oct 2026."></g>
+<g class="bp-titleblock" data-title="DESK LAMP, ARTICULATED" data-no="BP-008-01" data-scale="1:3 (A3)" data-units="mm" data-date="2026-10-09" data-by="Claude" data-sheet="1 / 1"></g>
+  </svg>
+  <figcaption>Desk lamp, first-angle projection. Hover a numbered balloon or a row in the parts list to light that part in every view.</figcaption>
+</figure>
+<p class="scroll-hint">&larr; swipe the drawing &rarr;</p>
+<div class="bp-side">
+<h2>Parts list</h2>
+<div class="bp-bomwrap"><table class="bp-bom">
+<thead><tr><th>Item</th><th>Part</th><th>Material / spec</th><th class="q">Qty</th></tr></thead>
+<tbody>
+<tr data-part="1"><td><span class="n">1</span></td><td><b>Base</b></td><td class="m">Die-cast zinc, Ø160 × 22, matt black</td><td class="q">1</td></tr><tr data-part="2"><td><span class="n">2</span></td><td><b>Pivot housing</b></td><td class="m">Steel, Ø30 × 45, with Ø24 pivot cap</td><td class="q">1</td></tr><tr data-part="3"><td><span class="n">3</span></td><td><b>Lower arm</b></td><td class="m">Steel tube Ø14 × 1.2, 316 between pivots</td><td class="q">1</td></tr><tr data-part="4"><td><span class="n">4</span></td><td><b>Elbow knuckle</b></td><td class="m">Aluminium Ø26, tension knob Ø20 (M5)</td><td class="q">1</td></tr><tr data-part="5"><td><span class="n">5</span></td><td><b>Upper arm</b></td><td class="m">Steel tube Ø14 × 1.2, 242 between pivots</td><td class="q">1</td></tr><tr data-part="6"><td><span class="n">6</span></td><td><b>Wrist bracket</b></td><td class="m">Steel, Ø22 swivel + stem</td><td class="q">1</td></tr><tr data-part="7"><td><span class="n">7</span></td><td><b>Shade</b></td><td class="m">Spun aluminium, Ø130 opening, 110 long</td><td class="q">1</td></tr><tr data-part="8"><td><span class="n">8</span></td><td><b>LED module</b></td><td class="m">8 W, 2700 K, Ø56 × 8</td><td class="q">1</td></tr><tr data-part="9"><td><span class="n">9</span></td><td><b>Rocker switch</b></td><td class="m">ABS, 16 × 10, mains rated</td><td class="q">1</td></tr><tr data-part="10"><td><span class="n">10</span></td><td><b>Cable and strain relief</b></td><td class="m">2 core, 1.5 m, moulded relief</td><td class="q">1</td></tr><tr data-part="11"><td><span class="n">11</span></td><td><b>Rubber foot</b></td><td class="m">Nitrile, Ø14 × 3, self-adhesive</td><td class="q">3</td></tr>
+</tbody></table></div>
+<ul class="legend"><li><svg class="bp-key" viewBox="0 0 38 12" aria-hidden="true"><path class="bp-outline" d="M1 6H37"/></svg>Outline (visible edge)</li><li><svg class="bp-key" viewBox="0 0 38 12" aria-hidden="true"><path class="bp-detail" d="M1 6H37"/></svg>Detail / edge line</li><li><svg class="bp-key" viewBox="0 0 38 12" aria-hidden="true"><path class="bp-hidden" d="M1 6H37"/></svg>Hidden line</li><li><svg class="bp-key" viewBox="0 0 38 12" aria-hidden="true"><path class="bp-center" d="M1 6H37"/></svg>Centre line</li><li><svg class="bp-key" viewBox="0 0 38 12" aria-hidden="true"><path class="bp-dl" d="M1 6H37"/><path class="bp-da" d="M1 6L8 3.4V8.6zM37 6L30 3.4V8.6z"/></svg>Dimension (mm unless stated)</li></ul>
+</div>
+</div>
+
+<div class="bp-extra">
+<h2>How to read it</h2>
+<ol class="steps"><li class="c1"><b>Base, feet and switch</b><span>A heavy zinc base (1) on three rubber feet (11) keeps the lamp from tipping; the rocker switch (9) sits on top at the front.</span></li><li class="c2"><b>Pivot and lower arm</b><span>The pivot housing (2) holds the lower arm (3) 62 mm above the desk; the arm leans up and forward.</span></li><li class="c3"><b>Elbow knuckle</b><span>The knuckle (4) joins the two arms; the knob squeezes the joint so the arms stay where you put them (see detail B).</span></li><li class="c4"><b>Upper arm and wrist</b><span>The upper arm (5) reaches forward to 390 mm from the pivot; the wrist bracket (6) carries the shade and tilts it.</span></li><li class="c5"><b>Shade and light</b><span>The shade (7) is tilted 20 degrees so the light falls on the desk; the LED module (8) sits inside, shown with dashed hidden lines.</span></li><li class="c1"><b>Power cable</b><span>The cable (10) leaves the rear of the base through a strain relief, so tugging it never loads the switch.</span></li></ol>
+<h2>Good to know</h2>
+<div class="cards"><div class="card c1"><svg aria-hidden="true"><use href="#i-idea"/></svg><b>Three views, one object</b><p>The front view shows the pose and the heights, the top view the footprint, the side view the depth. Each size is given once.</p></div><div class="card c4"><svg aria-hidden="true"><use href="#i-alert"/></svg><b>Illustrative only</b><p>Sizes are typical of an articulated desk lamp. They are not from a real product and not a design for manufacture or electrical safety.</p></div><div class="card c2"><svg aria-hidden="true"><use href="#i-target"/></svg><b>Follow the numbers</b><p>Every balloon matches a row in the parts list. Hover one to light that part in all views, or press play.</p></div></div>
+</div>
+<p class="note">Simplified: the spring balance, wiring and fixings are left out, and the arms are drawn in one plane. Dimensions are illustrative (typical of an articulated desk lamp), in mm, at 1:3 on an A3 sheet. First-angle projection: the top view sits below the front view, the side view (from the left) to its right.</p>
+</main>
+<script>
+/* ===== Blueprint engine =====
+   Draws everything that is geometry-by-formula inside <svg class="bp-sheet"> so the content markup stays short:
+   - sheet: paper, major/minor grid, border frame with zone letters/numbers (added automatically);
+   - g.bp-dim        linear (default), data-type="dia" or "rad" dimensions: extension lines, arrowheads / ticks, centred text;
+   - g.bp-balloon    numbered circle + leader line to the part;
+   - g.bp-titleblock, g.bp-notes, g.bp-viewlabel, g.bp-section, g.bp-door, g.bp-window, g.bp-north, g.bp-scalebar;
+   - interaction: hover/focus a balloon, a .bp-part or a parts-list row [data-part] lights all of them; toggles #bp-dims,
+     #bp-hidden, #bp-grid; #bp-print; walkthrough highlights (data-step) are mirrored onto the parts list.
+   - data-style="handwritten" on the .stage turns on the pencil-on-graph-paper look and loads two fonts.
+   Problems are collected in window.__bpErrors / __bpWarnings for the validator. No dependencies. */
+(() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  const errors = window.__bpErrors = [], warnings = window.__bpWarnings = [];
+  const root = document.documentElement;
+  const flag = document.querySelector('[data-style]');
+  const hand = !!flag && /hand/i.test(flag.dataset.style || '');
+  if (hand) root.classList.add('hand');
+  const fontsReady = !hand ? Promise.resolve() : new Promise(res => {
+    const l = document.createElement('link'); l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap';
+    l.onload = () => Promise.all(['400 16px Kalam', '700 16px Kalam', '700 32px Caveat'].map(f => document.fonts.load(f))).catch(() => {}).then(res);
+    l.onerror = res; document.head.appendChild(l);
+    setTimeout(res, 2500);
+  });
+  const svg = document.querySelector('svg.bp-sheet');
+  if (!svg) { errors.push('no <svg class="bp-sheet"> found'); window.__bpReady = Promise.resolve(); return; }
+  const vb = svg.viewBox.baseVal, W = vb.width || 1000, H = vb.height || 700, M = 18;
+  const UNIT = svg.dataset.unit || 'mm';
+
+  /* ---------- helpers ---------- */
+  const el = (tag, attrs, parent, text) => {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, typeof attrs[k] === 'number' ? +attrs[k].toFixed(2) : attrs[k]);
+    if (text != null) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  };
+  const n = (g, k, d) => { const v = g.getAttribute(k); const x = v == null || v === '' ? NaN : parseFloat(v); return Number.isNaN(x) ? (d === undefined ? NaN : d) : x; };
+  const need = (g, keys, what) => {
+    const bad = keys.filter(k => Number.isNaN(n(g, k)));
+    if (bad.length) { errors.push(`${what} is missing/invalid ${bad.join(', ')}`); return false; }
+    return true;
+  };
+  const fmt = v => { const r = Math.abs(v) >= 100 ? Math.round(v) : Math.round(v * 10) / 10; return String(r); };
+  const tw = t => { try { const w = t.getBBox().width; if (w) return w; } catch (e) {} return (t.textContent || '').length * 7; };
+  const fit = (t, maxW, minPx) => {            // shrink a label until it fits maxW
+    let px = parseFloat(getComputedStyle(t).fontSize) || 12;
+    while (tw(t) > maxW && px > minPx) { px -= .5; t.style.fontSize = px + 'px'; }
+  };
+  const kOf = g => { const c = g.closest('[data-k]'); return c ? parseFloat(c.dataset.k) : NaN; };
+  const norm = a => { while (a >= 90) a -= 180; while (a < -90) a += 180; return a; };
+  const clear = g => { while (g.firstChild) g.removeChild(g.firstChild); };
+  const arrow = (g, tx, ty, ux, uy, L = 9, hw = 2.7) => {   // tip at (tx,ty), body extends along (ux,uy)
+    const nx = -uy, ny = ux;
+    el('path', { class: 'bp-da', d: `M${tx} ${ty}L${tx + ux * L + nx * hw} ${ty + uy * L + ny * hw}L${tx + ux * L - nx * hw} ${ty + uy * L - ny * hw}Z` }, g);
+  };
+  const tick = (g, x, y, ux, uy) => {
+    const nx = -uy, ny = ux, tx = ux + nx, ty = uy + ny, l = Math.hypot(tx, ty);
+    el('path', { class: 'bp-dk', d: `M${x - tx / l * 5} ${y - ty / l * 5}L${x + tx / l * 5} ${y + ty / l * 5}` }, g);
+  };
+  const place = (g, text, x, y, ang, cls, anchor) => {
+    const t = el('text', { class: cls, x: 0, y: 0, transform: `translate(${x.toFixed(2)},${y.toFixed(2)}) rotate(${ang.toFixed(2)})`, dy: '.35em' }, g, text);
+    if (anchor) t.setAttribute('text-anchor', anchor);
+    return t;
+  };
+
+  /* ---------- sheet: paper, grid, frame, zones ---------- */
+  const buildSheet = () => {
+    svg.querySelectorAll(':scope > g.bp-bg').forEach(e => e.remove());
+    const bg = el('g', { class: 'bp-bg', 'aria-hidden': 'true' });
+    svg.insertBefore(bg, svg.firstChild);
+    el('rect', { class: 'bp-paper', x: 0, y: 0, width: W, height: H }, bg);
+    el('rect', { class: 'bp-gridrect', x: M, y: M, width: W - 2 * M, height: H - 2 * M }, bg);
+    el('rect', { class: 'bp-frame thin', x: 4, y: 4, width: W - 8, height: H - 8 }, bg);
+    el('rect', { class: 'bp-frame', x: M, y: M, width: W - 2 * M, height: H - 2 * M }, bg);
+    const cols = 8, rows = Math.max(2, Math.round(H / W * cols));
+    for (let i = 0; i <= cols; i++) { const x = M + (W - 2 * M) * i / cols;
+      el('path', { class: 'bp-zone', d: `M${x} 4V${M}M${x} ${H - M}V${H - 4}` }, bg);
+      if (i < cols) { const cx = x + (W - 2 * M) / cols / 2;
+        el('text', { class: 'bp-zt', x: cx, y: M - 5.5 }, bg, i + 1); el('text', { class: 'bp-zt', x: cx, y: H - 5.8 }, bg, i + 1); } }
+    for (let j = 0; j <= rows; j++) { const y = M + (H - 2 * M) * j / rows;
+      el('path', { class: 'bp-zone', d: `M4 ${y}H${M}M${W - M} ${y}H${W - 4}` }, bg);
+      if (j < rows) { const cy = y + (H - 2 * M) / rows / 2, L = String.fromCharCode(65 + j);
+        el('text', { class: 'bp-zt', x: 11, y: cy + 3.3 }, bg, L); el('text', { class: 'bp-zt', x: W - 11, y: cy + 3.3 }, bg, L); } }
+  };
+
+  /* ---------- dimensions ---------- */
+  const dimText = (g, len, extra) => {
+    const t = g.getAttribute('data-text');
+    if (t) {
+      const k = kOf(g), num = parseFloat(t.replace(/[^\d.]/g, ''));
+      if (!Number.isNaN(k) && !extra && /^[\d.,\s]+$/.test(t) && num > 0) {
+        const want = len * k; if (Math.abs(want - num) / num > 0.04) warnings.push(`dimension "${t}" does not match its drawn length (about ${fmt(want)} at this scale)`);
+      }
+      return t;
+    }
+    const k = kOf(g);
+    if (Number.isNaN(k)) { errors.push('a dimension has no data-text and no scale (data-k on its view) to compute one'); return null; }
+    return fmt(len * k);
+  };
+  const sgn = v => v < 0 ? -1 : 1;
+  /* linear dimension. type "linear" (default): aligned with the two points, data-offset pushes the line sideways;
+     type "h" / "v": horizontal / vertical measure between the two feature points, the dimension line sits at data-at (y for h, x for v). */
+  const dimLinear = (g, mode) => {
+    const keys = ['data-x1', 'data-y1', 'data-x2', 'data-y2'].concat(mode === 'linear' ? [] : ['data-at']);
+    if (!need(g, keys, 'dimension')) return;
+    const x1 = n(g, 'data-x1'), y1 = n(g, 'data-y1'), x2 = n(g, 'data-x2'), y2 = n(g, 'data-y2');
+    const GAP = 3, OVER = 4, exts = []; let ax, ay, bx, by, ux, uy, nx, ny, len;
+    if (mode === 'linear') {
+      const off = n(g, 'data-offset', 22), s = sgn(off), dx = x2 - x1, dy = y2 - y1; len = Math.hypot(dx, dy);
+      if (len < 2) { errors.push('a dimension has zero length'); return; }
+      ux = dx / len; uy = dy / len; const px = -uy * s, py = ux * s; nx = px; ny = py;
+      ax = x1 - uy * off; ay = y1 + ux * off; bx = x2 - uy * off; by = y2 + ux * off;
+      [[x1, y1], [x2, y2]].forEach(([qx, qy]) => exts.push([qx + px * GAP, qy + py * GAP, qx - uy * off + px * OVER, qy + ux * off + py * OVER]));
+    } else {
+      const at = n(g, 'data-at');
+      if (mode === 'h') {
+        len = Math.abs(x2 - x1); ux = sgn(x2 - x1); uy = 0; ax = x1; bx = x2; ay = by = at; nx = 0; ny = sgn(at - (y1 + y2) / 2);
+        [[x1, y1], [x2, y2]].forEach(([qx, qy]) => { const e = sgn(at - qy); exts.push([qx, qy + e * GAP, qx, at + e * OVER]); });
+      } else {
+        len = Math.abs(y2 - y1); ux = 0; uy = sgn(y2 - y1); ay = y1; by = y2; ax = bx = at; ny = 0; nx = sgn(at - (x1 + x2) / 2);
+        [[x1, y1], [x2, y2]].forEach(([qx, qy]) => { const e = sgn(at - qx); exts.push([qx + e * GAP, qy, at + e * OVER, qy]); });
+      }
+      if (len < 2) { errors.push('a dimension has zero length'); return; }
+    }
+    const style = g.dataset.end || 'arrow';
+    const text = dimText(g, len); if (text == null) return;
+    exts.forEach(e => el('path', { class: 'bp-dx', d: `M${e[0]} ${e[1]}L${e[2]} ${e[3]}` }, g));
+    const mx = (ax + bx) / 2, my = (ay + by) / 2, ang = norm(Math.atan2(uy, ux) * 180 / Math.PI);
+    const probe = place(g, text, 0, 0, 0, 'bp-dt'); const w = tw(probe); probe.remove();
+    const inside = len >= w + 2 * 9 + 8;
+    if (style === 'tick') {
+      const d = inside ? `M${ax - ux * 4} ${ay - uy * 4}L${bx + ux * 4} ${by + uy * 4}` : `M${ax - ux * 10} ${ay - uy * 10}L${bx + ux * 10} ${by + uy * 10}`;
+      el('path', { class: 'bp-dl', d }, g); tick(g, ax, ay, ux, uy); tick(g, bx, by, ux, uy);
+    } else if (inside) {
+      el('path', { class: 'bp-dl', d: `M${ax} ${ay}L${bx} ${by}` }, g); arrow(g, ax, ay, ux, uy); arrow(g, bx, by, -ux, -uy);
+    } else {
+      el('path', { class: 'bp-dl', d: `M${ax - ux * 13} ${ay - uy * 13}L${bx + ux * 13} ${by + uy * 13}` }, g);
+      arrow(g, ax, ay, -ux, -uy); arrow(g, bx, by, ux, uy);
+    }
+    if (inside) place(g, text, mx, my, ang, 'bp-dt');
+    else place(g, text, mx + nx * 10, my + ny * 10, ang, 'bp-dt');
+  };
+  const dimRound = (g, kind) => {
+    if (!need(g, ['data-cx', 'data-cy', 'data-r'], 'dimension')) return;
+    const cx = n(g, 'data-cx'), cy = n(g, 'data-cy'), r = n(g, 'data-r'), a = n(g, 'data-angle', 45) * Math.PI / 180;
+    const ux = Math.cos(a), uy = Math.sin(a), ext = n(g, 'data-ext', 24);
+    const text = dimText(g, kind === 'dia' ? 2 * r : r, true); if (text == null) return;
+    const label = g.getAttribute('data-text') ? text : (kind === 'dia' ? 'Ø' : 'R') + text;
+    const px = cx + ux * r, py = cy + uy * r, ex = cx + ux * (r + ext), ey = cy + uy * (r + ext);
+    const sx = kind === 'dia' ? cx - ux * r : cx, sy = kind === 'dia' ? cy - uy * r : cy;
+    el('path', { class: 'bp-dl', d: `M${sx} ${sy}L${ex} ${ey}` }, g);
+    arrow(g, px, py, -ux, -uy); if (kind === 'dia') arrow(g, sx, sy, ux, uy);
+    const right = ux >= 0; place(g, label, ex + (right ? 5 : -5), ey, 0, 'bp-dt', right ? 'start' : 'end');
+  };
+
+  const dimAngle = g => {
+    if (!need(g, ['data-cx', 'data-cy', 'data-r', 'data-a1', 'data-a2'], 'angle dimension')) return;
+    const cx = n(g, 'data-cx'), cy = n(g, 'data-cy'), r = n(g, 'data-r'), a1 = n(g, 'data-a1'), a2 = n(g, 'data-a2'), rad = Math.PI / 180;
+    const P = a => [cx + r * Math.cos(a * rad), cy + r * Math.sin(a * rad)], [x1, y1] = P(a1), [x2, y2] = P(a2), sw = a2 > a1 ? 1 : 0, s = a2 > a1 ? 1 : -1;
+    const text = g.getAttribute('data-text') || (fmt(Math.abs(a2 - a1)) + '°');
+    el('path', { class: 'bp-dl', d: `M${x1} ${y1}A${r} ${r} 0 0 ${sw} ${x2} ${y2}` }, g);
+    const t1 = [-Math.sin(a1 * rad) * s, Math.cos(a1 * rad) * s], t2 = [Math.sin(a2 * rad) * s, -Math.cos(a2 * rad) * s];
+    arrow(g, x1, y1, t1[0], t1[1], 8, 2.4); arrow(g, x2, y2, t2[0], t2[1], 8, 2.4);
+    const m = (a1 + a2) / 2, [tx, ty] = [cx + (r + 14) * Math.cos(m * rad), cy + (r + 14) * Math.sin(m * rad)];
+    place(g, text, tx, ty, 0, 'bp-dt', 'middle');
+  };
+
+  /* ---------- balloons ---------- */
+  const balloon = g => {
+    if (!g.dataset.n) { errors.push('a balloon has no data-n (part number)'); return; }
+    if (!need(g, ['data-x', 'data-y', 'data-tx', 'data-ty'], `balloon ${g.dataset.n}`)) return;
+    const x = n(g, 'data-x'), y = n(g, 'data-y'), tx = n(g, 'data-tx'), ty = n(g, 'data-ty'), r = n(g, 'data-r', 11.5);
+    const dx = x - tx, dy = y - ty, d = Math.hypot(dx, dy) || 1;
+    g.dataset.part = g.dataset.n;
+    if (!g.dataset.step) { const p = svg.querySelector(`.bp-part[data-step][data-part~="${g.dataset.n}"]`); if (p) g.dataset.step = p.dataset.step; }
+    g.setAttribute('tabindex', '0'); g.setAttribute('role', 'img'); g.setAttribute('aria-label', `Part ${g.dataset.n}`);
+    if (d > r + 2) el('path', { class: 'bp-leader', d: `M${tx + dx / d * r} ${ty + dy / d * r}L${x} ${y}` }, g);
+    el('circle', { class: 'bp-ldot', cx: x, cy: y, r: 2.4 }, g);
+    el('circle', { class: 'bp-bc', cx: tx, cy: ty, r }, g);
+    el('text', { class: 'bp-bt', x: tx, y: ty, dy: '.36em' }, g, g.dataset.n);
+  };
+
+  /* ---------- title block, notes, view labels ---------- */
+  const titleBlock = g => {
+    const w = n(g, 'data-w', 340), h = 80, x = n(g, 'data-x', W - M - w), y = n(g, 'data-y', H - M - h);
+    const cells = [['Drawing no.', 'data-no'], ['Scale', 'data-scale'], ['Units', 'data-units'], ['Date', 'data-date'], ['Drawn by', 'data-by'], ['Sheet', 'data-sheet']];
+    el('rect', { class: 'bp-tb-box', x, y, width: w, height: h }, g);
+    el('path', { class: 'bp-tb-line', d: `M${x} ${y + 32}H${x + w}M${x} ${y + 56}H${x + w}M${x + w / 3} ${y + 32}V${y + h}M${x + 2 * w / 3} ${y + 32}V${y + h}` }, g);
+    const t = el('text', { class: 'bp-tb-t', x: x + 10, y: y + 21 }, g, g.dataset.title || 'UNTITLED');
+    fit(t, w - 20, 11);
+    cells.forEach(([lab, key], i) => {
+      const cx = x + (i % 3) * w / 3, cy = y + 32 + Math.floor(i / 3) * 24;
+      el('text', { class: 'bp-tb-l', x: cx + 6, y: cy + 9 }, g, lab);
+      const v = el('text', { class: 'bp-tb-v', x: cx + 6, y: cy + 20 }, g, g.getAttribute(key) || '-');
+      fit(v, w / 3 - 12, 8);
+    });
+    if (!g.dataset.scale) warnings.push('no scale stated in the title block (data-scale)');
+  };
+  const wrap = (g, str, maxW, cls) => {
+    const probe = el('text', { class: cls, x: 0, y: 0 }, g), out = [];
+    let line = '';
+    str.split(/\s+/).forEach(wd => { const t = line ? line + ' ' + wd : wd; probe.textContent = t; if (tw(probe) > maxW && line) { out.push(line); line = wd; } else line = t; });
+    if (line) out.push(line);
+    probe.remove(); return out;
+  };
+  const notes = g => {
+    if (!need(g, ['data-x', 'data-y'], 'notes box')) return;
+    const w = n(g, 'data-w', 250), x = n(g, 'data-x'), y0 = n(g, 'data-y'), LH = 13.5;
+    const items = (g.dataset.lines || '').split('|').map(s => s.trim()).filter(Boolean);
+    const lines = items.map((s, i) => wrap(g, s, w - (g.dataset.plain ? 22 : 36), 'bp-nt'));
+    const rowsN = lines.reduce((a, b) => a + b.length, 0), h = 24 + rowsN * LH + items.length * 3 + 6;
+    const y = g.dataset.valign === 'bottom' ? y0 - h : y0;
+    el('rect', { class: 'bp-tb-box', x, y, width: w, height: h }, g);
+    el('path', { class: 'bp-tb-line', d: `M${x} ${y + 20}H${x + w}` }, g);
+    el('text', { class: 'bp-nh', x: x + 8, y: y + 14 }, g, g.dataset.title || 'NOTES');
+    let cy = y + 20 + 13;
+    lines.forEach((ls, i) => { ls.forEach((l, j) => { el('text', { class: 'bp-nt', x: x + (j && !g.dataset.plain ? 18 : j ? 14 : 8), y: cy }, g, (j === 0 && items.length > 1 && !g.dataset.plain && !/^REV/i.test(items[i]) ? (i + 1) + '. ' : '') + l); cy += LH; }); cy += 3; });
+  };
+  const viewLabel = g => {
+    if (!need(g, ['data-x', 'data-y'], 'view label')) return;
+    const x = n(g, 'data-x'), y = n(g, 'data-y');
+    const t = el('text', { class: 'bp-vl', x, y }, g, g.dataset.text || '');
+    const w = tw(t) + 12;
+    el('path', { class: 'bp-vbar', d: `M${x - w / 2} ${y + 6}H${x + w / 2}` }, g);
+    if (g.dataset.sub) el('text', { class: 'bp-vs', x, y: y + 21 }, g, g.dataset.sub);
+  };
+
+  /* ---------- symbols for plans: section line, door, window, north arrow, scale bar ---------- */
+  const section = g => {
+    if (!need(g, ['data-x1', 'data-y1', 'data-x2', 'data-y2'], 'section line')) return;
+    const x1 = n(g, 'data-x1'), y1 = n(g, 'data-y1'), x2 = n(g, 'data-x2'), y2 = n(g, 'data-y2'), s = g.dataset.dir === '-' ? -1 : 1;
+    const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, nx = -uy * s, ny = ux * s, lab = g.dataset.label || 'A';
+    el('path', { class: 'bp-cut', d: `M${x1} ${y1}L${x2} ${y2}` }, g);
+    [[x1, y1], [x2, y2]].forEach(([px, py]) => {
+      el('path', { class: 'bp-cut', style: 'stroke-dasharray:none', d: `M${px} ${py}L${px + nx * 20} ${py + ny * 20}` }, g);
+      arrow(g, px + nx * 22, py + ny * 22, -nx, -ny, 9, 3.4);
+      el('text', { class: 'bp-t lg', x: px + nx * 36, y: py + ny * 36, 'text-anchor': 'middle', dy: '.35em' }, g, lab);
+    });
+  };
+  const door = g => {
+    if (!need(g, ['data-x', 'data-y', 'data-w'], 'door')) return;
+    const x = n(g, 'data-x'), y = n(g, 'data-y'), w = n(g, 'data-w'), a = n(g, 'data-angle', 0) * Math.PI / 180, s = g.dataset.swing === '-' ? -1 : 1;
+    const ex = x + w * Math.cos(a), ey = y + w * Math.sin(a), o = a + s * Math.PI / 2, ox = x + w * Math.cos(o), oy = y + w * Math.sin(o);
+    el('path', { class: 'bp-outline', style: 'stroke-width:1.9', d: `M${x} ${y}L${ox} ${oy}` }, g);
+    el('path', { class: 'bp-detail', d: `M${ex} ${ey}A${w} ${w} 0 0 ${s > 0 ? 1 : 0} ${ox} ${oy}` }, g);
+  };
+  const windowSym = g => {
+    if (!need(g, ['data-x1', 'data-y1', 'data-x2', 'data-y2'], 'window')) return;
+    const x1 = n(g, 'data-x1'), y1 = n(g, 'data-y1'), x2 = n(g, 'data-x2'), y2 = n(g, 'data-y2'), t = n(g, 'data-t', 8);
+    const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, nx = -dy / L * t / 2, ny = dx / L * t / 2;
+    const P = [[x1 + nx, y1 + ny], [x2 + nx, y2 + ny], [x2 - nx, y2 - ny], [x1 - nx, y1 - ny]];
+    el('path', { class: 'bp-paperfill', d: 'M' + P.map(p => p.join(' ')).join('L') + 'Z' }, g);
+    el('path', { class: 'bp-detail', d: `M${P[0].join(' ')}L${P[1].join(' ')}M${P[3].join(' ')}L${P[2].join(' ')}M${P[0].join(' ')}L${P[3].join(' ')}M${P[1].join(' ')}L${P[2].join(' ')}` }, g);
+    el('path', { class: 'bp-thin', d: `M${x1} ${y1}L${x2} ${y2}` }, g);
+  };
+  const north = g => {
+    if (!need(g, ['data-x', 'data-y'], 'north arrow')) return;
+    const x = n(g, 'data-x'), y = n(g, 'data-y'), r = n(g, 'data-r', 20), a = n(g, 'data-angle', 0);
+    const gg = el('g', { transform: `translate(${x},${y}) rotate(${a})` }, g);
+    el('circle', { class: 'bp-detail', cx: 0, cy: 0, r }, gg);
+    el('path', { class: 'bp-solid', d: `M0 ${-r - 9}L0 ${r * .35}L${-r * .42} ${r * .62}Z` }, gg);
+    el('path', { class: 'bp-detail', d: `M0 ${-r - 9}L0 ${r * .35}L${r * .42} ${r * .62}Z` }, gg);
+    el('text', { class: 'bp-t lg', x: 0, y: -r - 17, 'text-anchor': 'middle' }, gg, 'N');
+  };
+  const scalebar = g => {
+    if (!need(g, ['data-x', 'data-y', 'data-seg-px', 'data-seg-val'], 'scale bar')) return;
+    const x = n(g, 'data-x'), y = n(g, 'data-y'), sp = n(g, 'data-seg-px'), sv = n(g, 'data-seg-val'), cnt = n(g, 'data-n', 4), u = g.dataset.unit || UNIT;
+    for (let i = 0; i < cnt; i++) el('rect', { class: i % 2 ? 'bp-sb-b' : 'bp-sb-a', x: x + i * sp, y, width: sp, height: 5 }, g);
+    for (let i = 0; i <= cnt; i++) el('text', { class: 'bp-t sm', x: x + i * sp, y: y + 17, 'text-anchor': 'middle' }, g, fmt(i * sv) + (i === cnt ? ' ' + u : ''));
+    if (g.dataset.title) el('text', { class: 'bp-t sm mute', x, y: y - 6 }, g, g.dataset.title);
+  };
+
+  /* ---------- run ---------- */
+  const SEL = {
+    '.bp-viewlabel': viewLabel, '.bp-section': section, '.bp-door': door, '.bp-window': windowSym, '.bp-north': north,
+    '.bp-scalebar': scalebar, '.bp-titleblock': titleBlock, '.bp-notes': notes, '.bp-balloon': balloon,
+  };
+  const draw = () => {
+    errors.length = 0; warnings.length = 0;
+    buildSheet();
+    svg.querySelectorAll('g.bp-dim').forEach(g => { clear(g); const t = g.dataset.type || 'linear'; t === 'dia' || t === 'rad' ? dimRound(g, t) : t === 'angle' ? dimAngle(g) : dimLinear(g, t === 'h' || t === 'v' ? t : 'linear'); });
+    Object.entries(SEL).forEach(([sel, fn]) => svg.querySelectorAll('g' + sel).forEach(g => { clear(g); fn(g); }));
+  };
+  draw();
+  window.__bpReady = fontsReady.then(() => { if (hand) draw(); });
+
+  /* ---------- interaction ---------- */
+  const keysOf = e => (e.dataset.part || '').split(/\s+/).filter(Boolean);
+  const hl = keys => {
+    const set = new Set(keys || []);
+    document.querySelectorAll('[data-part]').forEach(e => e.classList.toggle('hl', set.size > 0 && keysOf(e).some(k => set.has(k))));
+    svg.classList.toggle('bp-focus', set.size > 0);
+  };
+  const rows = [...document.querySelectorAll('.bp-bom tbody tr[data-part]')];
+  rows.forEach(r => r.tabIndex = 0);
+  document.addEventListener('pointerover', e => { const t = e.target.closest && e.target.closest('[data-part]'); if (t) hl(keysOf(t)); });
+  document.addEventListener('pointerout', e => { const t = e.target.closest && e.target.closest('[data-part]'); if (t && !(e.relatedTarget && t.contains(e.relatedTarget))) hl(null); });
+  document.addEventListener('focusin', e => { const t = e.target.closest && e.target.closest('[data-part]'); if (t) hl(keysOf(t)); });
+  document.addEventListener('focusout', e => { if (e.target.closest && e.target.closest('[data-part]')) hl(null); });
+  /* walkthrough (data-step) -> light up the matching parts-list rows */
+  if (window.MutationObserver) new MutationObserver(() => {
+    const on = new Set(); svg.querySelectorAll('.bp-part.on[data-part]').forEach(p => keysOf(p).forEach(k => on.add(k)));
+    rows.forEach(r => r.classList.toggle('on', keysOf(r).some(k => on.has(k))));
+  }).observe(svg, { subtree: true, attributes: true, attributeFilter: ['class'] });
+
+  const toggle = (id, cls, onWhenPressed) => {
+    const b = document.getElementById(id); if (!b) return;
+    b.addEventListener('click', () => { const p = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(p)); svg.classList.toggle(cls, !p); });
+  };
+  toggle('bp-dims', 'bp-nodim'); toggle('bp-hidden', 'bp-nohid'); toggle('bp-grid', 'bp-nogrid');
+  const pb = document.getElementById('bp-print'); if (pb) pb.addEventListener('click', () => window.print());
+})();
+</script>
+<script>
+/* Step focus + walkthrough player. Built automatically from the first .stage svg and ol.steps:
+   - hovering / tapping step N highlights every [data-step~="N"] element (and vice versa);
+   - a player bar (play/pause, prev/next, progress, caption) is inserted inside the stage.
+   No dependencies; nothing to add to the content markup. */
+(() => {
+  const svg = document.querySelector('.stage > svg'), items = [...document.querySelectorAll('ol.steps > li')];
+  if (!svg || !items.length) return;
+  const N = items.length, fig = svg.closest('.stage');
+  let pinned = null, cur = 0, playing = false, timer = null;
+  const set = n => {
+    svg.classList.toggle('focusing', n != null);
+    svg.querySelectorAll('[data-step]').forEach(el => el.classList.toggle('on', n != null && el.dataset.step.split(' ').includes(String(n))));
+    items.forEach((li, i) => li.classList.toggle('on', n === i + 1));
+  };
+
+  /* ---- player UI ---- */
+  const PLAY = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>';
+  const PAUSE = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>';
+  const title = li => (li.querySelector('b')?.textContent || '').trim();
+  const body = li => (li.querySelector('span')?.textContent || li.textContent.replace(title(li), '')).trim();
+  const bar = document.createElement('div');
+  bar.className = 'player';
+  bar.innerHTML = `<button class="pl-play" type="button" aria-label="Play walkthrough">${PLAY}</button>
+    <button class="pl-nav" type="button" data-d="-1" aria-label="Previous step"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="pl-nav" type="button" data-d="1" aria-label="Next step"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="pl-track">${items.map((li, i) => `<button class="pl-seg ${li.className}" type="button" aria-label="Step ${i + 1}: ${title(li)}"><i><s></s></i></button>`).join('')}</div>
+    <p class="pl-cap" aria-live="polite"><span class="pl-n">${N} steps</span><b>Walkthrough</b> Press play to go through it step by step.</p>`;
+  fig.insertBefore(bar, fig.querySelector('figcaption'));
+  const btn = bar.querySelector('.pl-play'), segs = [...bar.querySelectorAll('.pl-seg')], cap = bar.querySelector('.pl-cap');
+  const dur = li => Math.min(9000, Math.max(3500, body(li).split(/\s+/).length * 280));
+
+  const show = n => {
+    cur = n; pinned = n || null; set(pinned);
+    segs.forEach((s, i) => {
+      s.classList.toggle('done', i + 1 < n);
+      s.classList.remove('active'); void s.offsetWidth;        // restart the fill animation
+      s.classList.toggle('active', i + 1 === n);
+      s.style.setProperty('--dur', n ? dur(items[n - 1]) + 'ms' : '0ms');
+    });
+    cap.innerHTML = n
+      ? `<span class="pl-n">${n} / ${N}</span><b>${title(items[n - 1])}</b> ${body(items[n - 1])}`
+      : `<span class="pl-n">${N} steps</span><b>Walkthrough</b> Press play to go through it step by step.`;
+  };
+  const tick = () => {
+    if (cur >= N) { stop(); show(0); cap.innerHTML = `<span class="pl-n">done</span><b>That's all ${N} steps.</b> Press play to watch again.`; return; }
+    show(cur + 1);
+    timer = setTimeout(tick, dur(items[cur - 1]));
+  };
+  const play = () => { playing = true; bar.classList.add('playing'); btn.innerHTML = PAUSE; btn.setAttribute('aria-label', 'Pause walkthrough');
+    if (cur >= N) cur = 0; if (cur) { show(cur); timer = setTimeout(tick, dur(items[cur - 1])); } else tick(); };
+  const stop = () => { playing = false; clearTimeout(timer); bar.classList.remove('playing'); btn.innerHTML = PLAY; btn.setAttribute('aria-label', 'Play walkthrough'); };
+  const go = n => { stop(); show(Math.max(1, Math.min(N, n))); };
+
+  btn.addEventListener('click', () => playing ? stop() : play());
+  bar.querySelectorAll('.pl-nav').forEach(b => b.addEventListener('click', () => go((cur || (b.dataset.d > 0 ? 0 : 2)) + +b.dataset.d)));
+  segs.forEach((s, i) => s.addEventListener('click', () => go(i + 1)));
+  bar.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); go(cur + 1); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); go(cur - 1); }
+  });
+
+  /* ---- hover / tap on the reading guide and the visual ---- */
+  items.forEach((li, i) => {
+    li.tabIndex = 0;
+    li.addEventListener('mouseenter', () => set(i + 1));
+    li.addEventListener('mouseleave', () => set(pinned));
+    li.addEventListener('focus', () => set(i + 1));
+    li.addEventListener('blur', () => set(pinned));
+    li.addEventListener('click', () => { if (pinned === i + 1) { stop(); show(0); } else go(i + 1); });
+  });
+  svg.querySelectorAll('[data-step]').forEach(el => {
+    el.addEventListener('mouseenter', () => set(+el.dataset.step.split(' ')[0]));
+    el.addEventListener('mouseleave', () => set(pinned));
+  });
+})();
+</script>
+</body>
+</html>

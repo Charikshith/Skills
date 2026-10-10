@@ -1,0 +1,21 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Validator output (screenshots and print PDFs)
+out/
+*_desktop.png
+*_mobile.png
+*_light.png
+*_dark.png
+*_xray.png
+*_assembled.png
+*_exploded.png
+*_print.pdf
+
+# Lavish review pages (local scratch)
+.lavish/
+
+# Third-party source document (not ours to redistribute)
+100 Powerful ChatGPT AI  Commands.pdf
