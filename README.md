@@ -12,7 +12,6 @@ Works with **Claude Code, OpenAI Codex, Pi and Command Code**. All four use the 
 | # | Skill | What it makes | Try |
 |---|---|---|---|
 | 1 | `visualize` | An illustrated explainer: one SVG scene or diagram (flow, cycle, layers, anatomy …) with icons, motion on what moves, hover-to-highlight and a Play walkthrough | `/visualize how DNS works` |
-| 2 | `handwritten` | A notebook-style study page: ruled paper, pen and highlighter, a hand-drawn diagram, a sticky-note tip | `/handwritten photosynthesis with diagrams` |
 | 3 | `infographic` | A poster of real numbers: a giant hero stat, count-up tiles, icon rows ("7 in 10"), bars, donuts, A-vs-B. **Every number has a year and a source** | `/infographic water on Earth` |
 | 4 | `diagram` | A box-and-arrow structure diagram (architecture, network, pipeline, parts of a cell) with shapes per kind and group boxes, laid out automatically. "Try a flow" buttons | `/diagram how a web app is built` |
 | 5 | `flowchart` | A real flowchart: start/end, steps, Yes/No decisions, loops, optional swimlanes, laid out automatically. "Try a path" buttons | `/flowchart paying by card online` |
@@ -39,7 +38,6 @@ New pages are saved there too.
 | Folder | Pages |
 |---|---|
 | `001-visualize/` | `dns-resolution-visual.html`, `water-cycle-visual.html`, `new-forms-preview.html` |
-| `002-handwritten/` | `photosynthesis.html` |
 | `003-infographic/` | `water-on-earth-infographic.html`, `solar-system-in-numbers-infographic.html` (handwritten) |
 | `004-diagram/` | `web-app-architecture-diagram.html`, `animal-cell-diagram.html` (handwritten) |
 | `005-flowchart/` | `card-payment-flowchart.html`, `quadratic-equation-flowchart.html` (handwritten) |
@@ -67,7 +65,7 @@ No API keys, no accounts, no packages. The pages are plain HTML files.
 |---|---|---|
 | Install with `install.py` | Python 3.8 or newer (no packages) | all |
 | Let the agent check its page and take screenshots (recommended) | Python 3.8+, plus Playwright and Chromium in `.venv` (see Install, step 3) | all except `lavish` |
-| Use the handwriting fonts | Internet when you open the page (Google Fonts). Offline, a plainer handwriting font is used | `handwritten` always; the others only in the handwritten style |
+| Use the handwriting fonts | Internet when you open the page (Google Fonts). Offline, a plainer handwriting font is used | only in the handwritten style |
 | Use `lavish` | Node.js (it runs `npx lavish-axi`) | `lavish` only |
 | Install with `npx skills add` | Node.js | any (if this repo is on GitHub) |
 | Turn your own photo into an x-ray | The photo file (JPG or PNG) | `xray` only |
@@ -88,7 +86,6 @@ examples/<NNN>-<skill>/          <- example pages per skill
 install.py                       <- copies skills to agent folders
 requirements.txt                 <- Python package for the validators (Playwright)
 skills-lock.json                 <- records where the third-party lavish skill came from
-handwritten.skill                <- original zip of the handwritten skill
 ```
 
 | Agent        | Project folder          | User (all projects) folder |
@@ -184,13 +181,6 @@ Audience (`for a kid`, `for engineers`), form (`as a cycle`, `as layers`, `as a 
 /visualize Kubernetes architecture as layers, for engineers
 ```
 If you name no form, the skill picks the best one.
-
-#### `/handwritten` (#2)
-Level (`class 10`, `undergrad`, `interview prep`), length (`1 page`, `detailed`), `with diagrams`.
-```
-/handwritten Newton's laws of motion, class 9
-/handwritten TCP vs UDP, interview prep, detailed
-```
 
 #### `/infographic` (#3)
 Your own data, audience, region or years, `handwritten`.
@@ -316,7 +306,6 @@ Every skill has a validator in `.agents/skills/<skill>/scripts/validate.py`:
 |---|---|---|
 | all | placeholders left in the page, files loaded from the internet, unknown icons, JavaScript errors, sideways scroll, text clipped or overlapping | — |
 | visualize | badge count = step count | light, dark, mobile |
-| handwritten | — (warns if the web font is not loaded) | desktop, mobile |
 | infographic | Sources list missing, a source link pointing nowhere, a count-up ending on the wrong number, bad chart data | light, dark, mobile, print PDF |
 | diagram | boxes overlapping, a box outside its group, groups overlapping, labels on boxes | light, dark, mobile |
 | flowchart | bad spec, shapes overlapping, labels on shapes | light, dark, mobile |
@@ -356,7 +345,7 @@ For the handwritten style, a `web font not loaded` WARN only means that you are 
 ---
 
 ## Credits
-The ideas come from the "100 Powerful ChatGPT AI Commands" list: #1 `/visualize`, #2 `/handwritten`,
+The ideas come from the "100 Powerful ChatGPT AI Commands" list: #1 `/visualize`, #2 `/handwritten` (now its own repo, Charikshith/handwritten),
 #3 `/infographic`, #4 `/diagram`, #5 `/flowchart`, #6 `/mindmap`, #7 `/xray`, #8 `/blueprint`,
 #9 `/explodedview`, #10 `/thenvsnow`, #11 `/timeline`, #59 `/cheatsheet`. In that list, each command
 is only a one-line prompt. This repo turns each one into a real, tested skill with a template and a
