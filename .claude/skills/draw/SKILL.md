@@ -1,6 +1,6 @@
 ---
 name: draw
-description: Router for structure visuals. Picks the right skill (flowchart, diagram, mindmap, timeline, or visualize as fallback) from the request and hands off to it. Use whenever the user types /draw, or asks to "draw", "map", "sketch", "chart out" or "lay out" something without saying which kind of picture, e.g. "draw how login works", "map out onboarding", "show how X is built". Skip when the user already names a type (/flowchart, /diagram, /mindmap, /timeline) — use that skill directly.
+description: Router for structure visuals. Picks the right skill (flowchart, diagram, mindmap, timeline, or visualize as fallback) from the request and hands off to it. Use whenever the user types /draw, or asks to "draw", "sketch" or "lay out" something without saying which kind of picture, e.g. "draw how login works", "sketch the onboarding", "show how X is built". Skip when the user already names a type (/flowchart, /diagram, /mindmap, /timeline) — use that skill directly.
 ---
 
 # /draw — pick the right picture, then make it
