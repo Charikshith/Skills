@@ -22,6 +22,7 @@ Works with **Claude Code, OpenAI Codex, Pi and Command Code**. All four use the 
 | 10 | `thenvsnow` | Past vs present: a before/after slider, numbers with the % change worked out, and sources for every figure | `/thenvsnow computers 1984 vs today` |
 | 11 | `timeline` | A time axis with event cards joined to their exact dates, coloured eras, optional lanes, laid out automatically | `/timeline the history of the internet` |
 | 59 | `cheatsheet` | A dense quick-reference page: colour-grouped sections, copyable code, formulas, gotchas, live search. Prints on 1–2 pages | `/cheatsheet Git essentials` |
+| – | `draw` | A router, no page of its own: picks `flowchart`, `diagram`, `mindmap`, `timeline` (or `visualize` as fallback) from the request and hands off | `/draw how login works` |
 
 Every skill has light and dark mode, works on a phone, and has an optional
 **handwritten notebook style** (ruled paper, pen lines, sticky notes) — add `handwritten` to the request.
